@@ -9,23 +9,22 @@ using System.ComponentModel;
 
 namespace QDMS
 {
-    [Serializable]
     public enum RelativeMonth : int
     {
         /// <summary>
         /// Previous Month
         /// </summary>
-        [Description("Previous Month")]
+        //[Description("Previous Month")]
         PreviousMonth = -1,
         /// <summary>
         /// Current Month
         /// </summary>
-        [Description("Current Month")]
+        //[Description("Current Month")]
         CurrentMonth = 0,
         /// <summary>
         /// Next Month
         /// </summary>
-        [Description("Next Month")]
+        //[Description("Next Month")]
         NextMonth = 1
     }
 }

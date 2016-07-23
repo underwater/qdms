@@ -1,0 +1,17 @@
+{
+  "version": "1.0.0-*",
+  "buildOptions": {
+    "debugType": "portable"
+  },
+  "frameworks": {
+    "netstandard1.6": {
+      "bin": {
+        "assembly": "../Libraries/lz4net.dnx/LZ4.dnx.dll",
+        "pdb": "../Libraries/lz4net.dnx/LZ4.dnx.pdb"
+      },
+      "dependencies": {
+        "NETStandard.Library": "1.6.0"
+      }
+    }
+  }
+}

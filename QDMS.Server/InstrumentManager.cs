@@ -9,12 +9,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows;
-using System.Data.Entity;
 using EntityData;
 using NLog;
 using QDMS;
-using QDMSServer.DataSources;
+using Microsoft.EntityFrameworkCore;
 
 namespace QDMSServer
 {
@@ -22,6 +20,13 @@ namespace QDMSServer
     {
         private Logger _logger = LogManager.GetCurrentClassLogger();
         
+        protected DbContextOptions DbContextOptions { get; set; }
+
+        public InstrumentManager(DbContextOptions dbContextOptions)
+        {
+            DbContextOptions = dbContextOptions;
+        }
+
         public static bool AddContinuousFuture()
         {
             return true;
@@ -51,7 +56,7 @@ namespace QDMSServer
                 throw new Exception("Cannot add continuous futures using this method.");
             }
 
-            using (var context = new MyDBContext())
+            using (var context = new MyDBContext(DbContextOptions))
             {
                 //make sure data source is set and exists
                 if(instrument.Datasource == null || !context.Datasources.Any(x => x.Name == instrument.Datasource.Name))
@@ -85,12 +90,14 @@ namespace QDMSServer
                     if (instrument.PrimaryExchange != null)
                     {
                         context.Exchanges.Attach(instrument.PrimaryExchange);
-                        context.Entry(instrument.PrimaryExchange).Collection(x => x.Sessions).Load();
+                        // @todo test, if the sessions-relation has to be reloaded manually....
+                        //context.Entry(instrument.PrimaryExchange).Collection(x => x.Sessions).Load();
                     }
                     if (instrument.PrimaryExchangeID != instrument.ExchangeID && instrument.Exchange != null)
                     {
                         context.Exchanges.Attach(instrument.Exchange);
-                        context.Entry(instrument.Exchange).Collection(x => x.Sessions).Load();
+                        // @todo test, if the sessions-relation has to be reloaded manually....
+                        //context.Entry(instrument.Exchange).Collection(x => x.Sessions).Load();
                     }
 
                     //if necessary, load sessions from teplate or exchange
@@ -106,10 +113,14 @@ namespace QDMSServer
                     else if (instrument.SessionsSource == SessionsSource.Template)
                     {
                         instrument.Sessions = new List<InstrumentSession>();
-                        var template = context.SessionTemplates.Include("Sessions").FirstOrDefault(x => x.ID == instrument.SessionTemplateID);
+                        var template = context.SessionTemplates.FirstOrDefault(x => x.ID == instrument.SessionTemplateID);
                         if (template != null)
                         {
-                            foreach (TemplateSession s in template.Sessions)
+                            var sessions = (from s in context.TemplateSessions
+                                            where s.TemplateID == template.ID
+                                            select s).ToList();
+
+                            foreach (TemplateSession s in sessions)
                             {
                                 instrument.Sessions.Add(s.ToInstrumentSession());
                             }
@@ -117,7 +128,7 @@ namespace QDMSServer
                     }
                     
                     context.Instruments.Add(instrument);
-                    context.Database.Connection.Open();
+                    context.Database.OpenConnection();
                     if (saveChanges) context.SaveChanges();
 
                     Log(LogLevel.Info, string.Format("Instrument Manager: successfully added instrument {0}", instrument));
@@ -130,9 +141,11 @@ namespace QDMSServer
                         existingInstrument.ID,
                         instrument));
 
-                    context.Entry(existingInstrument).CurrentValues.SetValues(instrument);
+                    // @todo still in work: https://github.com/aspnet/EntityFramework/issues/1200
+                    throw new NotImplementedException("https://github.com/aspnet/EntityFramework/issues/1200 missing.");
+                    /*context.Entry(existingInstrument).CurrentValues.SetValues(instrument);
                     if (saveChanges) context.SaveChanges();
-                    return existingInstrument;
+                    return existingInstrument;*/
                 }
             }
             return null; //object exists and we don't update it
@@ -148,7 +161,7 @@ namespace QDMSServer
         /// <returns>A list of instruments matching the criteria.</returns>
         public List<Instrument> FindInstruments(MyDBContext context = null, Instrument search = null, Func<Instrument, bool> pred = null)
         {
-            if (context == null) context = new MyDBContext();
+            if (context == null) context = new MyDBContext(DbContextOptions);
 
             IQueryable<Instrument> query = context.Instruments
                 .Include(x => x.Tags)
@@ -282,21 +295,23 @@ namespace QDMSServer
         /// <summary>
         /// Updates the instrument with new values. Instrument must have an ID.
         /// </summary>
-        public static void UpdateInstrument(Instrument instrument)
+        public void UpdateInstrument(Instrument instrument)
         {
             if(!instrument.ID.HasValue) return;
 
-            using (var context = new MyDBContext())
+            using (var context = new MyDBContext(DbContextOptions))
             {
                 try
                 {
                     //find it
                     Instrument instrumentFromDB = context.Instruments.First(x => x.ID == instrument.ID);
                     //update it
-                    context.Entry(instrumentFromDB).CurrentValues.SetValues(instrument); //perhaps update all the underlying collections as well?
+                    // @todo still in work: https://github.com/aspnet/EntityFramework/issues/1200
+                    throw new NotImplementedException("https://github.com/aspnet/EntityFramework/issues/1200 missing.");
+                    /*context.Entry(instrumentFromDB).CurrentValues.SetValues(instrument); //perhaps update all the underlying collections as well?
 
                     //save it
-                    context.SaveChanges();
+                    context.SaveChanges();*/
                 }
                 catch (Exception ex)
                 {
@@ -311,9 +326,9 @@ namespace QDMSServer
         /// <summary>
         /// Delete an instrument and all locally stored data.
         /// </summary>
-        public static void RemoveInstrument(Instrument instrument, IDataStorage localStorage)
+        public void RemoveInstrument(Instrument instrument, IDataStorage localStorage)
         {
-            using (var entityContext = new MyDBContext())
+            using (var entityContext = new MyDBContext(DbContextOptions))
             {
                 //hacking around the circular reference issue
                 if (instrument.IsContinuousFuture)

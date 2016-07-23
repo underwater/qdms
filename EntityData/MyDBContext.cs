@@ -4,16 +4,16 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using System.Data.Entity;
-using EntityData.Migrations;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using QDMS;
 
 namespace EntityData
 {
     public partial class MyDBContext : DbContext
     {
-        public MyDBContext()
-            : base("Name=qdmsEntities")
+        public MyDBContext(DbContextOptions options)
+            : base(options)
         {
         }
  
@@ -29,45 +29,91 @@ namespace EntityData
         public DbSet<ContinuousFuture> ContinuousFutures { get; set; }
         public DbSet<DataUpdateJobDetails> DataUpdateJobs { get; set; }
 
-        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Configurations.Add(new InstrumentConfig());
-            modelBuilder.Configurations.Add(new TagConfig());
-            modelBuilder.Configurations.Add(new ExchangeConfig());
-            modelBuilder.Configurations.Add(new DatasourceConfig());
-            modelBuilder.Configurations.Add(new UnderlyingSymbolConfig());
-            modelBuilder.Configurations.Add(new ContinuousFutureConfig());
-            modelBuilder.Configurations.Add(new DataUpdateJobConfig());
+            ModelCreatingInterface(modelBuilder.Entity<Instrument>());
+            ModelCreatingExchange(modelBuilder.Entity<Exchange>());
+            ModelCreatingContinuousFuture(modelBuilder.Entity<ContinuousFuture>());
+            ModelCreatingDataUpdateJobDetails(modelBuilder.Entity<DataUpdateJobDetails>());
+
+            modelBuilder.Entity<SessionTemplate>()
+                .HasMany(x => x.Sessions).WithOne()
+                .HasForeignKey(x => x.TemplateID)
+                .IsRequired()
+                .OnDelete(Microsoft.EntityFrameworkCore.Metadata.DeleteBehavior.Cascade);
 
             modelBuilder.Entity<ExchangeSession>().ToTable("exchangesessions");
             modelBuilder.Entity<InstrumentSession>().ToTable("instrumentsessions");
             modelBuilder.Entity<TemplateSession>().ToTable("templatesessions");
 
-            modelBuilder.Entity<Instrument>()
-            .HasMany(c => c.Tags)
-            .WithMany()             
-            .Map(x =>
-            {
-                x.MapLeftKey("InstrumentID");
-                x.MapRightKey("TagID");
-                x.ToTable("tag_map");
-            });
+            modelBuilder.Entity<TagInstrument>().HasOne(x => x.Instrument)
+                .WithMany()
+                .HasForeignKey(x => x.InstrumentID);
+            modelBuilder.Entity<TagInstrument>().HasOne(x => x.Tag)
+                .WithMany()
+                .HasForeignKey(x => x.TagID);
+            modelBuilder.Entity<TagInstrument>().ToTable("tag_map");
+        }
 
-
-            modelBuilder.Entity<Instrument>().Property(x => x.Strike).HasPrecision(16, 8);
-            modelBuilder.Entity<Instrument>().Property(x => x.MinTick).HasPrecision(16, 8);
-
-            modelBuilder.Entity<ExchangeSession>().Property(x => x.OpeningTime).HasPrecision(0);
-            modelBuilder.Entity<ExchangeSession>().Property(x => x.ClosingTime).HasPrecision(0);
-
-            modelBuilder.Entity<InstrumentSession>().Property(x => x.OpeningTime).HasPrecision(0);
-            modelBuilder.Entity<InstrumentSession>().Property(x => x.ClosingTime).HasPrecision(0);
-
-            modelBuilder.Entity<TemplateSession>().Property(x => x.OpeningTime).HasPrecision(0);
-            modelBuilder.Entity<TemplateSession>().Property(x => x.ClosingTime).HasPrecision(0);
-
+        public void ModelCreatingInterface(EntityTypeBuilder<Instrument> builder)
+        {
+            builder.HasOne(p => p.Exchange)
+                .WithMany()
+                .HasForeignKey(x => x.ExchangeID)
+                .OnDelete(Microsoft.EntityFrameworkCore.Metadata.DeleteBehavior.Restrict);
             
-            Database.SetInitializer(new MigrateDatabaseToLatestVersion<MyDBContext, MyDbContextConfiguration>());
+            builder.HasOne(x => x.PrimaryExchange)
+                .WithMany()
+                .HasForeignKey(x => x.PrimaryExchangeID)
+                .OnDelete(Microsoft.EntityFrameworkCore.Metadata.DeleteBehavior.Restrict);
+
+            builder.HasOne(x => x.Datasource)
+                .WithMany()
+                .HasForeignKey(x => x.DatasourceID)
+                .IsRequired()
+                .OnDelete(Microsoft.EntityFrameworkCore.Metadata.DeleteBehavior.Cascade);
+
+            builder.HasMany(x => x.Sessions)
+                .WithOne()
+                .HasForeignKey(x => x.InstrumentID)
+                .IsRequired()
+                .OnDelete(Microsoft.EntityFrameworkCore.Metadata.DeleteBehavior.Cascade);
+            
+            builder.HasOne(x => x.ContinuousFuture)
+                .WithMany()
+                .HasForeignKey(x => x.ContinuousFutureID)
+                .OnDelete(Microsoft.EntityFrameworkCore.Metadata.DeleteBehavior.Restrict);
+        }
+
+        public void ModelCreatingExchange(EntityTypeBuilder<Exchange> builder)
+        {
+            builder.HasMany(x => x.Sessions)
+                .WithOne()
+                .HasForeignKey(x => x.ExchangeID)
+                .IsRequired()
+                .OnDelete(Microsoft.EntityFrameworkCore.Metadata.DeleteBehavior.Cascade);
+        }
+
+        public void ModelCreatingContinuousFuture(EntityTypeBuilder<ContinuousFuture> builder)
+        {
+            builder.HasOne(x => x.UnderlyingSymbol)
+                .WithMany()
+                .HasForeignKey(x => x.UnderlyingSymbolID)
+                .IsRequired()
+                .OnDelete(Microsoft.EntityFrameworkCore.Metadata.DeleteBehavior.Cascade);
+        }
+
+        public void ModelCreatingDataUpdateJobDetails(EntityTypeBuilder<DataUpdateJobDetails> builder)
+        {
+            builder.HasOne(t => t.Instrument)
+                .WithMany()
+                .HasForeignKey(x => x.InstrumentID)
+                .OnDelete(Microsoft.EntityFrameworkCore.Metadata.DeleteBehavior.Cascade);
+
+            builder.HasOne(t => t.Tag)
+                .WithMany()
+                .HasForeignKey(x => x.TagID)
+                .OnDelete(Microsoft.EntityFrameworkCore.Metadata.DeleteBehavior.Cascade);
         }
     }
 }

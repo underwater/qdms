@@ -12,78 +12,77 @@ namespace QDMS
     /// <summary>
     /// Order type.
     /// </summary>
-    [Serializable]
     public enum InstrumentType : int
     {
         /// <summary>
         /// Stock
         /// </summary>
-        [Description("STK")]
+        //[Description("STK")]
         Stock = 0,
         /// <summary>
         /// Option
         /// </summary>
-        [Description("OPT")]
+        //[Description("OPT")]
         Option = 1,
         /// <summary>
         /// Future
         /// </summary>
-        [Description("FUT")]
+        //[Description("FUT")]
         Future = 2,
         /// <summary>
         /// Indice
         /// </summary>
-        [Description("IND")]
+        //[Description("IND")]
         Index = 3,
         /// <summary>
         /// FOP = options on futures
         /// </summary>
-        [Description("FOP")]
+        //[Description("FOP")]
         FutureOption = 4,
         /// <summary>
         /// Cash
         /// </summary>
-        [Description("CASH")]
+        //[Description("CASH")]
         Cash = 5,
         /// <summary>
         /// For Combination Orders - must use combo leg details
         /// </summary>
-        [Description("BAG")]
+        //[Description("BAG")]
         Bag = 6,
         /// <summary>
         /// Bond
         /// </summary>
-        [Description("BOND")]
+        //[Description("BOND")]
         Bond = 7,
         /// <summary>
         /// Warrant
         /// </summary>
-        [Description("WAR")]
+        //[Description("WAR")]
         Warrant = 8,
         /// <summary>
         /// Commodity
         /// </summary>
-        [Description("CMDTY")]
+        //[Description("CMDTY")]
         Commodity = 9,
         /// <summary>
         /// Bill
         /// </summary>
-        [Description("BILL")]
+        //[Description("BILL")]
         Bill = 10,
         /// <summary>
         /// CFD
         /// </summary>
-        [Description("CFD")]
+        //[Description("CFD")]
         CFD = 11,
         /// <summary>
         /// Undefined Security Type
         /// </summary>
-        [Description("")]
+        //[Description("")]
         Undefined = 12,
         /// <summary>
         /// Backtest result
         /// </summary>
-        [Description("Backtest")]
+        //[Description("Backtest")]
         Backtest = 13
     }
 

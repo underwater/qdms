@@ -13,11 +13,10 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Timers;
 using NLog;
 using QDMS;
 using QDMSServer.DataSources;
-using Timer = System.Timers.Timer;
+using Timer = System.Threading.Timer;
 #if !DEBUG
 using System.Net;
 #endif
@@ -129,9 +128,7 @@ namespace QDMSServer
             if (cfBroker == null)
                 throw new ArgumentNullException("cfBroker");
 
-            _connectionTimer = new Timer(10000);
-            _connectionTimer.Elapsed += ConnectionTimerElapsed;
-            _connectionTimer.Start();
+            _connectionTimer = new Timer(ConnectionTimerElapsed, null, 0, 10000);
 
             DataSources = new ObservableDictionary<string, IRealTimeDataSource>
             {
@@ -599,7 +596,7 @@ namespace QDMSServer
         /// <summary>
         /// There is a timer which periodically calls the tryconnect function to connect to any disconnected data sources
         /// </summary>
-        private void ConnectionTimerElapsed(object sender, ElapsedEventArgs e)
+        private void ConnectionTimerElapsed(object status)
         {
             TryConnect();
         }

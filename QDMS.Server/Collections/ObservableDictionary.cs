@@ -38,7 +38,6 @@ using System.Runtime.InteropServices;
 //namespace DrWPF.Windows.Data
 namespace QDMSServer
 {
-    [Serializable]
     public class ObservableDictionary<TKey, TValue> :
         IDictionary<TKey, TValue>,
         ICollection<KeyValuePair<TKey, TValue>>,
@@ -46,8 +45,6 @@ namespace QDMSServer
         IDictionary,
         ICollection,
         IEnumerable,
-        ISerializable,
-        IDeserializationCallback,
         INotifyCollectionChanged,
         INotifyPropertyChanged
     {
@@ -82,16 +79,7 @@ namespace QDMSServer
         }
 
         #endregion public
-
-        #region protected
-
-        protected ObservableDictionary(SerializationInfo info, StreamingContext context)
-        {
-            _siInfo = info;
-        }
-
-        #endregion protected
-
+        
         #endregion constructors
 
         #region properties
@@ -567,39 +555,7 @@ namespace QDMSServer
         }
 
         #endregion IEnumerable
-
-        #region ISerializable
-
-        public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            if (info == null)
-            {
-                throw new ArgumentNullException("info");
-            }
-
-            Collection<DictionaryEntry> entries = new Collection<DictionaryEntry>();
-            foreach (DictionaryEntry entry in KeyedEntryCollection)
-                entries.Add(entry);
-            info.AddValue("entries", entries);
-        }
-
-        #endregion ISerializable
-
-        #region IDeserializationCallback
-
-        public virtual void OnDeserialization(object sender)
-        {
-            if (_siInfo != null)
-            {
-                Collection<DictionaryEntry> entries = (Collection<DictionaryEntry>)
-                    _siInfo.GetValue("entries", typeof(Collection<DictionaryEntry>));
-                foreach (DictionaryEntry entry in entries)
-                    AddEntry((TKey)entry.Key, (TValue)entry.Value);
-            }
-        }
-
-        #endregion IDeserializationCallback
-
+        
         #region INotifyCollectionChanged
 
         event NotifyCollectionChangedEventHandler INotifyCollectionChanged.CollectionChanged
@@ -666,7 +622,7 @@ namespace QDMSServer
 
         #region Enumerator
 
-        [Serializable, StructLayout(LayoutKind.Sequential)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct Enumerator<TKey, TValue> : IEnumerator<KeyValuePair<TKey, TValue>>, IDisposable, IDictionaryEnumerator, IEnumerator
         {
             #region constructors
@@ -758,7 +714,7 @@ namespace QDMSServer
                     ValidateCurrent();
                     if (_isDictionaryEntryEnumerator)
                     {
-                        return new DictionaryEntry(_current.Key, _current.Value);
+                        return new DictionaryEntry { Key = _current.Key, Value = _current.Value };
                     }
                     return new KeyValuePair<TKey, TValue>(_current.Key, _current.Value);
                 }
@@ -825,10 +781,7 @@ namespace QDMSServer
         private Dictionary<TKey, TValue> _dictionaryCache = new Dictionary<TKey, TValue>();
         private int _dictionaryCacheVersion = 0;
         private int _version = 0;
-
-        [NonSerialized]
-        private SerializationInfo _siInfo = null;
-
+        
         #endregion fields
     }
 }

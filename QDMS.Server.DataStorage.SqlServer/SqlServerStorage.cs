@@ -4,8 +4,7 @@ using System.ComponentModel;
 using System.Data.SqlClient;
 using System.Runtime.CompilerServices;
 using System.Text;
-using System.Timers;
-using System.Windows;
+using System.Threading;
 using NLog;
 using QDMS;
 using QDMS.Annotations;
@@ -31,12 +30,10 @@ namespace QDMSServer.DataSources
             Name = "Local Storage";
             _connectionString = connectionString;
 
-            _connectionStatusUpdateTimer = new Timer(1000);
-            _connectionStatusUpdateTimer.Elapsed += _connectionStatusUpdateTimer_Elapsed;
-            _connectionStatusUpdateTimer.Start();
+            _connectionStatusUpdateTimer = new Timer(_connectionStatusUpdateTimer_Elapsed, null, 0, 1000);
         }
 
-        private void _connectionStatusUpdateTimer_Elapsed(object sender, ElapsedEventArgs e)
+        private void _connectionStatusUpdateTimer_Elapsed(object status)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
@@ -447,8 +444,7 @@ namespace QDMSServer.DataSources
                 {
                     reader.Read();
                     int count = reader.GetInt32(0);
-                    reader.Close();
-
+                    
                     if (count == 0)
                     {
                         //remove from the instrumentinfo table

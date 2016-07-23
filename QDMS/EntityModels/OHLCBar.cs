@@ -16,27 +16,35 @@ namespace QDMS
     public class OHLCBar
     {
         [ProtoMember(1)]
+        [Column(TypeName = "decimal(16,8)")]
         public decimal Open { get; set; }
 
         [ProtoMember(2)]
+        [Column(TypeName = "decimal(16,8)")]
         public decimal High { get; set; }
 
         [ProtoMember(3)]
+        [Column(TypeName = "decimal(16,8)")]
         public decimal Low { get; set; }
 
         [ProtoMember(4)]
+        [Column(TypeName = "decimal(16,8)")]
         public decimal Close { get; set; }
 
         [ProtoMember(5)]
+        [Column(TypeName = "decimal(16,8)")]
         public decimal? AdjOpen { get; set; }
 
         [ProtoMember(6)]
+        [Column(TypeName = "decimal(16,8)")]
         public decimal? AdjHigh { get; set; }
 
         [ProtoMember(7)]
+        [Column(TypeName = "decimal(16,8)")]
         public decimal? AdjLow { get; set; }
 
         [ProtoMember(8)]
+        [Column(TypeName = "decimal(16,8)")]
         public decimal? AdjClose { get; set; }
 
         [NotMapped]
@@ -81,11 +89,13 @@ namespace QDMS
         /// <summary>
         /// Date/Time of the bar open.
         /// </summary>
+        [Column(TypeName = "datetime(3)")]
         public DateTime? DTOpen { get; set; }
 
         /// <summary>
         /// Date/Time of the bar close.
         /// </summary>
+        [Column(TypeName = "datetime(3)")]
         public DateTime DT { get; set; }
 
         [ProtoMember(10)]
@@ -98,9 +108,11 @@ namespace QDMS
         public int InstrumentID { get; set; }
 
         [ProtoMember(13)]
+        [Column(TypeName = "decimal(16,8)")]
         public decimal? Dividend { get; set; }
 
         [ProtoMember(14)]
+        [Column(TypeName = "decimal(16,8)")]
         public decimal? Split { get; set; }
 
         public BarSize Frequency { get; set; }

@@ -12,7 +12,6 @@ using ProtoBuf;
 namespace QDMS
 {
     [ProtoContract]
-    [Serializable]
     public class ExchangeSession : ISession
     {
         [Key]
@@ -20,8 +19,10 @@ namespace QDMS
         [ProtoMember(1)]
         public int ID { get; set; }
 
+        [Column(TypeName = "time")]
         public TimeSpan OpeningTime { get; set; }
 
+        [Column(TypeName = "time")]
         public TimeSpan ClosingTime { get; set; }
 
         [ProtoMember(2)]

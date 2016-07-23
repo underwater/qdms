@@ -1,0 +1,17 @@
+{
+  "version": "1.0.0-*",
+  "buildOptions": {
+    "debugType": "portable"
+  },
+  "frameworks": {
+    "netstandard1.6": {
+      "bin": {
+        "assembly": "../Libraries/QLNet/QLNet.dll",
+        "pdb": "../Libraries/QLNet/QLNet.pdb"
+      },
+      "dependencies": {
+        "NETStandard.Library": "1.6.0"
+      }
+    }
+  }
+}

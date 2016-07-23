@@ -25,7 +25,7 @@ namespace QDMS
         public static bool Overlaps(this ISession session1, ISession session2)
         {
             //Create starting and ending DTs for the sessions
-            var arbitraryStartPoint = new DateTime(2014, 1, 1, 0, 0, 0, 0, new GregorianCalendar(), DateTimeKind.Utc);
+            var arbitraryStartPoint = new DateTime(2014, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
             DateTime session1Start, session1End, session2StartBack, session2StartForward, session2EndBack, session2EndForward;
             
             SessionToDTs(session1, arbitraryStartPoint, out session1Start, out session1End);

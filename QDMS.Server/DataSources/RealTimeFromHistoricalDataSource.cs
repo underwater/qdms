@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Timers;
+using System.Threading;
 using NLog;
 
 namespace QDMS.Server.DataSources
@@ -60,8 +60,7 @@ namespace QDMS.Server.DataSources
                 if (requrestDict.Value.Count > 0)
                 {
                     if (_timers.TryGetValue(requrestDict.Key.Frequency, out timer))
-                        if (!timer.Enabled)
-                            timer.Start();
+                        timer.Change(0, Convert.ToInt32(requrestDict.Key.Frequency.ToTimeSpan().TotalMilliseconds));
 
                     if (_shortTimers.TryGetValue(requrestDict.Key.Frequency, out controller))
                         if (!controller.AsyncResult.IsCompleted)
@@ -80,8 +79,7 @@ namespace QDMS.Server.DataSources
             foreach (var barSize in barSizes)
             {
                 if (_timers.TryGetValue(barSize, out timer))
-                    if (timer.Enabled)
-                        timer.Stop();
+                    timer.Change(Timeout.Infinite, Convert.ToInt32(barSize.ToTimeSpan().TotalMilliseconds));
 
                 if (_shortTimers.TryGetValue(barSize, out controller))
                     if (controller.AsyncResult != null && !controller.AsyncResult.IsCompleted)
@@ -140,8 +138,7 @@ namespace QDMS.Server.DataSources
                 }
                 else
                 {
-                    var timer = new Timer(interval);
-                    timer.Elapsed += TimerElapsed;
+                    var timer = new Timer(TimerElapsed, barSize, Timeout.Infinite, Convert.ToInt32(interval));
 
                     _timers.TryAdd(barSize, timer);
                 }
@@ -202,8 +199,7 @@ namespace QDMS.Server.DataSources
             if (result)
             {
                 // start timer if not is already started:
-                if (!timer.Enabled)
-                    timer.Start();
+                timer.Change(0, Convert.ToInt32(request.Frequency.ToTimeSpan().TotalMilliseconds));
             }
 
             ShortTimerController controller;
@@ -249,8 +245,7 @@ namespace QDMS.Server.DataSources
                     if (_connectedRequests.TryRemove(requestGrouping, out dummy2))
                         if (_connectedRequests.Count == 0)
                             if (_timers.TryGetValue(request.Frequency, out timer))
-                                if (timer.Enabled)
-                                    timer.Stop();
+                                timer.Change(Timeout.Infinite, Convert.ToInt32(request.Frequency.ToTimeSpan().TotalMilliseconds));
         }
 
         public event EventHandler<RealTimeDataEventArgs> DataReceived;
@@ -258,11 +253,9 @@ namespace QDMS.Server.DataSources
         public event EventHandler<DataSourceDisconnectEventArgs> Disconnected;
         public event PropertyChangedEventHandler PropertyChanged;
         
-        private void TimerElapsed(object sender, ElapsedEventArgs e)
+        private void TimerElapsed(object barSize)
         {
-            var entry = _timers.First(p => p.Value == sender);
-            
-            SendData(entry.Key);
+            SendData((barSize as BarSize?).Value);
         }
 
         private void SimulatedTimer(ShortTimerController controller, BarSize barSize)

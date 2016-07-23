@@ -9,7 +9,7 @@ namespace QDMSService
     public sealed class DataServer
     {
         private Logger _log;
-        private Config.DataService _config;
+        private Config.DataServiceConfig _config;
 
         private InstrumentManager _instrumentManager;
 
@@ -21,7 +21,7 @@ namespace QDMSService
         private RealTimeDataServer _realTimeDataServer;
         
 
-        public DataServer(Config.DataService config)
+        public DataServer(Config.DataServiceConfig config)
         {
             _config = config;
             _log = LogManager.GetCurrentClassLogger();
@@ -32,11 +32,11 @@ namespace QDMSService
             _log.Info($"Server is initialisizing ...");
 
             //create data db if it doesn't exist
-            DataDBContext dataContext;
+            /*DataDBContext dataContext;
             try
             {
                 dataContext = new DataDBContext();
-                dataContext.Database.Initialize(false);
+                //dataContext.Database.Initialize(false);
             }
             catch (System.Data.Entity.Core.ProviderIncompatibleException ex)
             {
@@ -48,15 +48,15 @@ namespace QDMSService
             try
             {
                 entityContext = new MyDBContext();
-                entityContext.Database.Initialize(false);
+                //entityContext.Database.Initialize(false);
             }
             catch (System.Data.Entity.Core.ProviderIncompatibleException ex)
             {
                 throw new NotSupportedException("Could not connect to context MyDB!", ex);
-            }
+            }*/
 
             // initialisize helper classes
-            _instrumentManager = new InstrumentManager();
+            _instrumentManager = new InstrumentManager(_config.LocalStorage.BuildDbContextOptions<MyDBContext>());
 
             var cfRealtimeBroker = new ContinuousFuturesBroker(new QDMSClient.QDMSClient("RTDBCFClient", "127.0.0.1",
                 _config.RealtimeDataService.RequestPort, _config.RealtimeDataService.PublisherPort,
@@ -69,11 +69,16 @@ namespace QDMSService
 
             switch (_config.LocalStorage.Type)
             {
-                case Config.LocalStorageType.MySql:
-                    localStorage = new QDMSServer.DataSources.MySQLStorage(_config.LocalStorage.ConnectionString);
-                    break;
-                case Config.LocalStorageType.SqlServer:
+                case Config.DatabaseConnectionType.MySql:
+                    throw new NotImplementedException();
+                    // @Todo
+                    //localStorage = new QDMSServer.DataSources.MySQLStorage(_config.LocalStorage.ConnectionString);
+                    //break;
+                case Config.DatabaseConnectionType.SqlServer:
                     localStorage = new QDMSServer.DataSources.SqlServerStorage(_config.LocalStorage.ConnectionString);
+                    break;
+                case Config.DatabaseConnectionType.Sqlite:
+                    localStorage = new QDMS.Server.DataStorage.Sqlite.SqliteStorage(_config.LocalStorage.ConnectionString);
                     break;
                 default:
                     throw new NotSupportedException("Not supported local storage type: " + _config.LocalStorage.Type);

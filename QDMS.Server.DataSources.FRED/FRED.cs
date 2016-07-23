@@ -20,6 +20,7 @@ using System.Windows;
 using System.Xml.Linq;
 using NLog;
 using QDMS;
+using System.Net.Http;
 
 #pragma warning disable 67
 
@@ -79,11 +80,15 @@ namespace QDMSServer.DataSources
                 FredUtils.FrequencyToRequestString(request.Frequency));
             string contents;
 
-            using (WebClient webClient = new WebClient())
+            using (HttpClient client = new HttpClient())
             {
                 try
                 {
-                    contents = webClient.DownloadString(dataURL);
+                    var task = client.GetAsync(dataURL);
+                    task.Wait();
+                    var task2 = task.Result.Content.ReadAsStringAsync();
+                    task2.Wait();
+                    contents = task2.Result;
                 }
                 catch (WebException ex)
                 {

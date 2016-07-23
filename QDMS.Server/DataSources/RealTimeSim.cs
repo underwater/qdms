@@ -8,9 +8,9 @@ using System;
 using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Timers;
 using QDMS;
 using QDMS.Annotations;
+using System.Threading;
 
 #pragma warning disable 67
 namespace QDMSServer.DataSources
@@ -42,8 +42,7 @@ namespace QDMSServer.DataSources
             _loopLimit = new ConcurrentDictionary<int, int>();
             _idMap = new ConcurrentDictionary<int, int>();
 
-            _timer = new Timer(1);
-            _timer.Elapsed += SimulateData;
+            _timer = new Timer(SimulateData, null, Timeout.Infinite, 1);
 
             _rand = new Random();
         }
@@ -51,13 +50,13 @@ namespace QDMSServer.DataSources
         public void Connect()
         {
             Connected = true;
-            _timer.Start();
+            _timer.Change(0, 1);
         }
 
         public void Disconnect()
         {
             Connected = false;
-            _timer.Stop();
+            _timer.Change(Timeout.Infinite, 1);
         }
 
         public int RequestRealTimeData(RealTimeDataRequest request)
@@ -86,7 +85,7 @@ namespace QDMSServer.DataSources
             _requestedInstrumentIDs.TryRemove(requestID, out instrumentID);
         }
 
-        private void SimulateData(object sender, ElapsedEventArgs e)
+        private void SimulateData(object status)
         {
             foreach (int instrumentID in _requestedInstrumentIDs.Values)
             {

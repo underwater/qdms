@@ -12,16 +12,13 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Timers;
 using System.Linq;
 using LZ4;
 using NetMQ.Sockets;
-using NetMQ.zmq;
 using ProtoBuf;
 using QDMS;
 using NetMQ;
-using Poller = NetMQ.Poller;
-using Timer = System.Timers.Timer;
+using Timer = System.Threading.Timer;
 
 namespace QDMSClient
 {
@@ -47,8 +44,6 @@ namespace QDMSClient
         /// Keeps track of live real time data streams.
         /// </summary>
         public ObservableCollection<RealTimeDataRequest> RealTimeDataStreams { get; set; }
-
-        private NetMQContext _context;
 
         /// <summary>
         /// This socket sends requests for real time data.
@@ -116,7 +111,7 @@ namespace QDMSClient
         /// </summary>
         private bool _running;
 
-        private Poller _poller;
+        private NetMQPoller _poller;
 
         public void Dispose()
         {
@@ -141,12 +136,6 @@ namespace QDMSClient
             {
                 _heartBeatTimer.Dispose();
                 _heartBeatTimer = null;
-            }
-            //The context must be disposed of last! It will hang if the sockets have not been disposed.
-            if (_context != null)
-            {
-                _context.Dispose();
-                _context = null;
             }
         }
 
@@ -208,7 +197,7 @@ namespace QDMSClient
         }
 
         //The timer sends heartbeat messages so we know that the server is still up.
-        private void _timer_Elapsed(object sender, ElapsedEventArgs e)
+        private void _timer_Elapsed(object status)
         {
             HeartBeat();
         }
@@ -294,10 +283,9 @@ namespace QDMSClient
         {
             Dispose();
 
-            _context = NetMQContext.Create();
-            _reqSocket = _context.CreateDealerSocket();
-            _subSocket = _context.CreateSubscriberSocket();
-            _dealerSocket = _context.CreateSocket(ZmqSocketType.Dealer);
+            _reqSocket = new DealerSocket();
+            _subSocket = new SubscriberSocket();
+            _dealerSocket = new DealerSocket();
 
             _reqSocket.Options.Identity = Encoding.UTF8.GetBytes(_name);
             _subSocket.Options.Identity = Encoding.UTF8.GetBytes(_name);
@@ -316,8 +304,11 @@ namespace QDMSClient
                 _reqSocket.SendMoreFrame("");
                 _reqSocket.SendFrame("PING");
 
-                _reqSocket.ReceiveString(TimeSpan.FromSeconds(1)); //empty frame starts the REP message //todo receive string?
-                reply = _reqSocket.ReceiveString(TimeSpan.FromMilliseconds(50));
+                string empty;
+                if (!_reqSocket.TryReceiveFrameString(TimeSpan.FromSeconds(1), out empty)) //empty frame starts the REP message //todo receive string?
+                    throw new TimeoutException();
+                if (!_reqSocket.TryReceiveFrameString(TimeSpan.FromMilliseconds(50), out reply))
+                    throw new TimeoutException();
             }
             catch
             {
@@ -346,15 +337,13 @@ namespace QDMSClient
             _dealerLoopThread.Start();
 
             //this loop takes care of replies to the request socket: heartbeats and data request status messages
-            _poller = new Poller();
-            _poller.AddSocket(_reqSocket);
-            _poller.AddSocket(_subSocket);
-            _poller.AddSocket(_dealerSocket);
-            Task.Factory.StartNew(_poller.PollTillCancelled, TaskCreationOptions.LongRunning);
+            _poller = new NetMQPoller();
+            _poller.Add(_reqSocket);
+            _poller.Add(_subSocket);
+            _poller.Add(_dealerSocket);
+            Task.Factory.StartNew(_poller.Run, TaskCreationOptions.LongRunning);
 
-            _heartBeatTimer = new Timer(1000);
-            _heartBeatTimer.Elapsed += _timer_Elapsed;
-            _heartBeatTimer.Start();
+            _heartBeatTimer = new Timer(_timer_Elapsed, null, 0, 1000);
         }
 
         /// <summary>
@@ -437,13 +426,13 @@ namespace QDMSClient
             }
 
             _running = false;
-            if (_poller != null && _poller.IsStarted)
+            if (_poller != null && _poller.IsRunning)
             {
-                _poller.CancelAndJoin();
+                _poller.Stop();
             }
 
             if(_heartBeatTimer != null)
-                _heartBeatTimer.Stop();
+                _heartBeatTimer.Change(Timeout.Infinite, 1000);
 
             if(_dealerLoopThread != null && _dealerLoopThread.ThreadState == ThreadState.Running)
                 _dealerLoopThread.Join(10);
@@ -704,7 +693,7 @@ namespace QDMSClient
                 return new List<Instrument>();
             }
 
-            using (NetMQSocket s = _context.CreateSocket(ZmqSocketType.Req))
+            using (NetMQSocket s = new RequestSocket())
             {
                 s.Connect(string.Format("tcp://{0}:{1}", _host, _instrumentServerPort));
                 var ms = new MemoryStream();
@@ -778,7 +767,7 @@ namespace QDMSClient
                 return null;
             }
 
-            using (NetMQSocket s = _context.CreateSocket(ZmqSocketType.Req))
+            using (NetMQSocket s = new RequestSocket())
             {
                 s.Connect(string.Format("tcp://{0}:{1}", _host, _instrumentServerPort));
                 var ms = new MemoryStream();
@@ -789,7 +778,9 @@ namespace QDMSClient
                 s.SendFrame(MyUtils.ProtoBufSerialize(instrument, ms));
 
                 //then get the reply
-                string result = s.ReceiveString(TimeSpan.FromSeconds(1));
+                string result;
+                if (!s.TryReceiveFrameString(TimeSpan.FromSeconds(1), out result))
+                    throw new TimeoutException();
 
                 if(result != "SUCCESS")
                 {

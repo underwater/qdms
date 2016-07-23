@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<DataServiceConfig>
+  <LocalStorage>
+    <!--
+    <Type>MySql</Type>
+    <ConnectionString>Server=localhost;Database=qdmsdata;Uid=tradingrobot;Pwd=uS9M6O6tx7f74ka;</ConnectionString>
+    -->
+    <Type>Sqlite</Type>
+    <ConnectionString>Filename=./qdmsdata.db</ConnectionString>
+  </LocalStorage>
+  <InstrumentService Port="7000"/>
+  <HistoricalDataService Port="7001"/>
+  <RealtimeDataService RequestPort="7002" PublisherPort="7003"/>
+</DataServiceConfig>

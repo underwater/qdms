@@ -1,0 +1,25 @@
+{
+  "version": "1.0.0-*",
+  "buildOptions": {
+    "debugType": "portable"
+  },
+  "dependencies": {
+      "AsyncIO": "0.1.26",
+      "NodaTime": "2.0.0-alpha20160707",
+      "protobuf-net": "2.1.0",
+      "NetMQ": "4.0.0-rc5",
+      "Microsoft.EntityFrameworkCore": "1.0.0",
+      "Microsoft.EntityFrameworkCore.Relational": "1.0.0",
+      
+      "LZ4.dnx": "*",
+
+      "QDMS": "1.0.0.*"
+  },
+  "frameworks": {
+    "netstandard1.6": {
+      "dependencies": {
+        "NETStandard.Library": "1.6.0"
+      }
+    }
+  }
+}

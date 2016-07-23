@@ -1,0 +1,33 @@
+{
+  "version": "1.0.0-*",
+  "buildOptions": {
+    "debugType": "portable",
+    "emitEntryPoint": true,
+    "copyToOutput": [
+      "DataServiceConfig.xml"
+    ] 
+  },
+  "dependencies": {
+    "Microsoft.EntityFrameworkCore": "1.0.0",
+    "Microsoft.EntityFrameworkCore.Relational": "1.0.0",
+    "NLog": "4.4.0-betav15",
+    
+    "EntityData": "*",
+    "QDMS": "1.0.0.*",
+    "QDMSClient": "1.0.0.*",
+    "QDMS.Server": "1.0.0.*",
+    "QDMS.Server.DataStorage.Sqlite": "1.0.0.*",
+    "QDMS.Server.DataStorage.SqlServer": "1.0.0.*"
+  },
+  "frameworks": {
+    "netcoreapp1.0": {
+      "dependencies": {
+        "Microsoft.NETCore.App": {
+          "type": "platform",
+          "version": "1.0.0"
+        }
+      },
+      "imports": "dnxcore50"
+    }
+  }
+}

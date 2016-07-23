@@ -15,8 +15,7 @@ using ProtoBuf;
 namespace QDMS
 {
     [ProtoContract]
-    [Serializable]
-    public class Instrument : ICloneable
+    public class Instrument
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -76,24 +75,21 @@ namespace QDMS
 
         [ProtoMember(7)]
         [NotMapped]
-        [NonSerialized]
         private int _expirationYear;
 
         [ProtoMember(8)]
         [NotMapped]
-        [NonSerialized]
         private int _expirationMonth;
 
         [ProtoMember(9)]
         [NotMapped]
-        [NonSerialized]
         private int _expirationDay;
 
         [ProtoMember(10)]
         public OptionType? OptionType { get; set; }
 
         [ProtoMember(11)]
-        
+        [Column(TypeName = "decimal(16,8)")]
         public decimal? Strike { get; set; }
 
         [ProtoMember(12)]
@@ -101,6 +97,7 @@ namespace QDMS
         public string Currency { get; set; }
 
         [ProtoMember(13)]
+        [Column(TypeName = "decimal(16,8)")]
         public decimal? MinTick { get; set; }
 
         [ProtoMember(14)]

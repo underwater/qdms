@@ -12,7 +12,7 @@ using ProtoBuf;
 namespace QDMS
 {
     [ProtoContract]
-    public class Tag : ICloneable, IEquatable<Tag>
+    public class Tag : IEquatable<Tag>
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -22,18 +22,7 @@ namespace QDMS
         [ProtoMember(2)]
         [MaxLength(255)]
         public string Name { get; set; }
-
-        /// <summary>
-        /// Creates a new object that is a copy of the current instance.
-        /// </summary>
-        /// <returns>
-        /// A new object that is a copy of this instance.
-        /// </returns>
-        public object Clone()
-        {
-            return new Tag { ID = ID, Name = Name };
-        }
-
+        
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
         /// </summary>

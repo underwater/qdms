@@ -8,7 +8,7 @@ using System;
 
 namespace QDMS
 {
-    public interface ISession : ICloneable
+    public interface ISession
     {
         int ID { get; set; }
 

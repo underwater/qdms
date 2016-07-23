@@ -1,28 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.Xml.Serialization;
 
 namespace QDMSService.Config
 {
-    public class RealtimeDataService : ConfigurationElement
+    public class RealtimeDataServiceConfig
     {
-        [ConfigurationProperty("RequestPort", DefaultValue = 5556, IsRequired = false)]
-        [IntegerValidator(MinValue = 1, MaxValue = 65535)]
-        public int RequestPort
-        {
-            get { return (int)this["RequestPort"]; }
-            set { this["RequestPort"] = value; }
-        }
+        [XmlAttribute]
+        [DefaultValue(5556)]
+        [Range(1, 65535)]
+        public int RequestPort { get; set; }
 
-        [ConfigurationProperty("PublisherPort", DefaultValue = 5557, IsRequired = false)]
-        [IntegerValidator(MinValue = 1, MaxValue = 65535)]
-        public int PublisherPort
-        {
-            get { return (int)this["PublisherPort"]; }
-            set { this["PublisherPort"] = value; }
-        }
+        [XmlAttribute]
+        [DefaultValue(5556)]
+        [Range(1, 65535)]
+        public int PublisherPort { get; set; }
     }
 }

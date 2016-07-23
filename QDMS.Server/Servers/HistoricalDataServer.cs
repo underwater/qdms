@@ -18,12 +18,12 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using System.Windows;
 using LZ4;
 using NLog;
 using ProtoBuf;
 using QDMS;
 using NetMQ;
+using NetMQ.Sockets;
 
 namespace QDMSServer
 {
@@ -33,15 +33,14 @@ namespace QDMSServer
         /// Whether the broker is running or not.
         /// </summary>
         public bool ServerRunning { get; set; }
-
-        private NetMQContext _context;
+        
         private NetMQSocket _routerSocket;
         private readonly int _listenPort;
         private IHistoricalDataBroker _broker;
         private readonly ConcurrentQueue<KeyValuePair<HistoricalDataRequest, List<OHLCBar>>> _dataQueue;
 
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
-        private Poller _poller;
+        private NetMQPoller _poller;
         private readonly object _socketLock = new object();
 
         public HistoricalDataServer(int port, IHistoricalDataBroker broker)
@@ -72,15 +71,15 @@ namespace QDMSServer
         {
             //check that it's not already running
             if (ServerRunning) return;
-            _context = NetMQContext.Create();
 
-            _routerSocket = _context.CreateSocket(ZmqSocketType.Router);
+            _routerSocket = new RouterSocket();
             _routerSocket.Bind("tcp://*:" + _listenPort);
             _routerSocket.ReceiveReady += socket_ReceiveReady;
 
-            _poller = new Poller(new[] { _routerSocket });
+            _poller = new NetMQPoller();
+            _poller.Add(_routerSocket);
 
-            Task.Factory.StartNew(_poller.PollTillCancelled, TaskCreationOptions.LongRunning);
+            Task.Factory.StartNew(_poller.Run, TaskCreationOptions.LongRunning);
 
             ServerRunning = true;
         }
@@ -91,9 +90,9 @@ namespace QDMSServer
         public void StopServer()
         {
             if (!ServerRunning) return;
-            if (_poller != null && _poller.IsStarted)
+            if (_poller != null && _poller.IsRunning)
             {
-                _poller.CancelAndJoin();
+                _poller.Stop();
             }
             ServerRunning = false;
         }
@@ -299,11 +298,6 @@ namespace QDMSServer
             {
                 _routerSocket.Dispose();
                 _routerSocket = null;
-            }
-            if (_context != null)
-            {
-                _context.Dispose();
-                _context = null;
             }
         }
     }

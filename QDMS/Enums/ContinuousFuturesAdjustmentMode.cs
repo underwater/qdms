@@ -9,23 +9,22 @@ using System.ComponentModel;
 
 namespace QDMS
 {
-    [Serializable]
     public enum ContinuousFuturesAdjustmentMode
     {
         /// <summary>
         /// No Adjustment
         /// </summary>
-        [Description("No Adjustment")]
+        //[Description("No Adjustment")]
         NoAdjustment = 0,
         /// <summary>
         /// Ratio
         /// </summary>
-        [Description("Ratio")]
+        //[Description("Ratio")]
         Ratio = 1,
         /// <summary>
         /// Difference
         /// </summary>
-        [Description("Difference")]
+        //[Description("Difference")]
         Difference = 2
     }
 }

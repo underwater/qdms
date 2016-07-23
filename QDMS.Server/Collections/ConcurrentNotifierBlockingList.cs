@@ -13,7 +13,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Threading;
-using System.Windows.Threading;
 
 namespace QDMSServer
 {
@@ -133,25 +132,12 @@ namespace QDMSServer
         }
 
 
-        public event NotifyCollectionChangedEventHandler CollectionChanged
-        {
-            add
-            {
-                _handlerThreads.Add(value, Thread.CurrentThread);
-            }
-            remove
-            {
-                _handlerThreads.Remove(value);
-            }
-        }
+        public event NotifyCollectionChangedEventHandler CollectionChanged;
 
         protected void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
         {
-            foreach (Delegate handler in _handlerThreads.Keys)
-            {
-                Dispatcher dispatcher = Dispatcher.FromThread(_handlerThreads[handler]);
-                if (dispatcher != null) dispatcher.Invoke(DispatcherPriority.Send, handler, this, e);
-            }
+            if (CollectionChanged != null)
+                CollectionChanged.Invoke(this, e);
         }
     }
     

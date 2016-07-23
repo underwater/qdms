@@ -14,12 +14,11 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Timers;
 using System.Windows;
 using NLog;
 using QDMS;
 using QDMSServer.DataSources;
-using Timer = System.Timers.Timer;
+using Timer = System.Threading.Timer;
 
 namespace QDMSServer
 {
@@ -122,9 +121,7 @@ namespace QDMSServer
             _dataStorage.Error += DatasourceError;
             _dataStorage.HistoricalDataArrived += LocalStorageHistoricalDataArrived;
 
-            _connectionTimer = new Timer(10000);
-            _connectionTimer.Elapsed += ConnectionTimerElapsed;
-            _connectionTimer.Start();
+            _connectionTimer = new Timer(ConnectionTimerElapsed, null, 0, 10000);
 
             _originalRequests = new ConcurrentDictionary<int, HistoricalDataRequest>();
             _subRequests = new ConcurrentDictionary<int, List<HistoricalDataRequest>>();
@@ -286,7 +283,7 @@ namespace QDMSServer
         /// <summary>
         /// There is a timer which periodically calls the tryconnect function to connect to any disconnected data sources
         /// </summary>
-        private void ConnectionTimerElapsed(object sender, ElapsedEventArgs e)
+        private void ConnectionTimerElapsed(object status)
         {
             TryConnect();
         }

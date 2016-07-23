@@ -17,10 +17,12 @@ namespace QDMS
         /// </summary>
         public static void ToCSVFile(this IEnumerable<OHLCBar> data, string filePath)
         {
-            using (StreamWriter file = new StreamWriter(filePath))
+            using (var fileStream = File.Open(filePath, FileMode.CreateNew))
             {
-                //write header first
-                var headerFields = new List<string>
+                using (StreamWriter file = new StreamWriter(fileStream))
+                {
+                    //write header first
+                    var headerFields = new List<string>
                 {
                     "Date",
                     "Time",
@@ -37,26 +39,27 @@ namespace QDMS
                     "AdjLow",
                     "AdjClose"
                 };
-                string header = String.Join(",", headerFields);
-                file.WriteLine(header);
+                    string header = String.Join(",", headerFields);
+                    file.WriteLine(header);
 
-                foreach (OHLCBar bar in data)
-                {
-                    file.WriteLine("{0:yyyy-MM-dd},{1:HH:mm:ss.fff},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13}",
-                        bar.Date,
-                        bar.Date,
-                        bar.Open,
-                        bar.High,
-                        bar.Low,
-                        bar.Close,
-                        bar.Volume,
-                        bar.OpenInterest,
-                        bar.Dividend,
-                        bar.Split,
-                        bar.AdjOpen,
-                        bar.AdjHigh,
-                        bar.AdjLow,
-                        bar.AdjClose);
+                    foreach (OHLCBar bar in data)
+                    {
+                        file.WriteLine("{0:yyyy-MM-dd},{1:HH:mm:ss.fff},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13}",
+                            bar.Date,
+                            bar.Date,
+                            bar.Open,
+                            bar.High,
+                            bar.Low,
+                            bar.Close,
+                            bar.Volume,
+                            bar.OpenInterest,
+                            bar.Dividend,
+                            bar.Split,
+                            bar.AdjOpen,
+                            bar.AdjHigh,
+                            bar.AdjLow,
+                            bar.AdjClose);
+                    }
                 }
             }
         }

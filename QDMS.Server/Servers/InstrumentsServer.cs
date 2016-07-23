@@ -15,23 +15,21 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using LZ4;
-using NetMQ.zmq;
 using NLog;
 using QDMS;
 using NetMQ;
-using Poller = NetMQ.Poller;
+using NetMQ.Sockets;
 
 namespace QDMSServer
 {
     public class InstrumentsServer : IDisposable
     {
-        private NetMQContext _context;
         private NetMQSocket _socket;
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
         private bool _runServer;
         private readonly int _socketPort;
         private readonly IInstrumentSource _instrumentManager;
-        private Poller _poller;
+        private NetMQPoller _poller;
 
         public bool Running { get { return _runServer; } }
 
@@ -44,11 +42,6 @@ namespace QDMSServer
             {
                 _socket.Dispose();
                 _socket = null;
-            }
-            if (_context != null)
-            {
-                _context.Dispose();
-                _context = null;
             }
         }
 
@@ -70,14 +63,14 @@ namespace QDMSServer
             if (_runServer) return;
 
             _runServer = true;
-            _context = NetMQContext.Create();
 
-            _socket = _context.CreateSocket(ZmqSocketType.Rep);
+            _socket = new ResponseSocket();
             _socket.Bind("tcp://*:" + _socketPort);
             _socket.ReceiveReady += _socket_ReceiveReady;
-            _poller = new Poller(new[] { _socket });
+            _poller = new NetMQPoller();
+            _poller.Add(_socket);
 
-            Task.Factory.StartNew(_poller.PollTillCancelled, TaskCreationOptions.LongRunning);
+            Task.Factory.StartNew(_poller.Run, TaskCreationOptions.LongRunning);
         }
 
         void _socket_ReceiveReady(object sender, NetMQSocketEventArgs e)
@@ -85,7 +78,7 @@ namespace QDMSServer
             var ms = new MemoryStream();
             List<Instrument> instruments;
             bool hasMore;
-            string request = _socket.ReceiveString(SendReceiveOptions.DontWait, out hasMore);
+            string request = _socket.ReceiveFrameString(out hasMore);
             if (request == null) return;
 
             //if the request is for a search, receive the instrument w/ the search parameters and pass it to the searcher
@@ -160,9 +153,9 @@ namespace QDMSServer
         public void StopServer()
         {
             _runServer = false;
-            if (_poller != null && _poller.IsStarted)
+            if (_poller != null && _poller.IsRunning)
             {
-                _poller.CancelAndJoin();
+                _poller.Stop();
             }
         }
 

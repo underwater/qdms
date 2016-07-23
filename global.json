@@ -1,0 +1,11 @@
+{
+    "projects": [
+        "QLNet",
+        "Libraries",
+
+        "EntityData",
+        "QDMS",
+        "QDMSClient",
+        "QDMS.Server"
+    ]
+}

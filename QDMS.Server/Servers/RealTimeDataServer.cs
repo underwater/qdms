@@ -20,7 +20,7 @@ using NLog;
 using ProtoBuf;
 using QDMS;
 using NetMQ;
-using Poller = NetMQ.Poller;
+using NetMQ.Sockets;
 
 namespace QDMSServer
 {
@@ -42,8 +42,7 @@ namespace QDMSServer
         public bool ServerRunning { get; private set; }
 
         public IRealTimeDataBroker Broker { get; set; }
-
-        private NetMQContext _context;
+        
         private NetMQSocket _pubSocket;
         private NetMQSocket _reqSocket;
         
@@ -51,7 +50,7 @@ namespace QDMSServer
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
         private readonly object _pubSocketLock = new object();
-        private Poller _poller;
+        private NetMQPoller _poller;
 
         public RealTimeDataServer(int pubPort, int reqPort, IRealTimeDataBroker broker)
         {
@@ -87,9 +86,9 @@ namespace QDMSServer
         //tells the servers to stop running and waits for the threads to shut down.
         public void StopServer()
         {
-            if (_poller != null && _poller.IsStarted)
+            if (_poller != null && _poller.IsRunning)
             {
-                _poller.CancelAndJoin();
+                _poller.Stop();
             }
 
             //clear the socket and context and say it's not running any more
@@ -107,19 +106,18 @@ namespace QDMSServer
         {
             if (!ServerRunning)
             {
-                _context = NetMQContext.Create();
-
                 //the publisher socket
-                _pubSocket = _context.CreatePublisherSocket();
+                _pubSocket = new PublisherSocket();
                 _pubSocket.Bind("tcp://*:" + PublisherPort);
 
                 //the request socket
-                _reqSocket = _context.CreateSocket(ZmqSocketType.Rep);
+                _reqSocket = new ResponseSocket();
                 _reqSocket.Bind("tcp://*:" + RequestPort);
                 _reqSocket.ReceiveReady += _reqSocket_ReceiveReady;
 
-                _poller = new Poller(new[] { _reqSocket });
-                Task.Factory.StartNew(_poller.PollTillCancelled, TaskCreationOptions.LongRunning);
+                _poller = new NetMQPoller();
+                _poller.Add(_reqSocket);
+                Task.Factory.StartNew(_poller.Run, TaskCreationOptions.LongRunning);
             }
             ServerRunning = true;
         }
@@ -261,11 +259,6 @@ namespace QDMSServer
             {
                 _reqSocket.Dispose();
                 _reqSocket = null;
-            }
-            if (_context != null)
-            {
-                _context.Dispose();
-                _context = null;
             }
         }
     }

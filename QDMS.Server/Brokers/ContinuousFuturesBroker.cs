@@ -28,14 +28,13 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Timers;
-using System.Windows;
 using NLog;
 using QDMS;
 using QDMS.Annotations;
 using QLNet;
 using Instrument = QDMS.Instrument;
-using Timer = System.Timers.Timer;
+using Timer = System.Threading.Timer;
+using System.Threading;
 
 #pragma warning disable 67
 
@@ -141,18 +140,17 @@ namespace QDMSServer
             _frontContractRequestMap = new Dictionary<int, FrontContractRequest>();
             _dataUsesPending = new Dictionary<KeyValuePair<int, BarSize>, int>();
 
-            _reconnectTimer = new Timer(1000);
-            _reconnectTimer.Elapsed += _reconnectTimer_Elapsed;
-            _reconnectTimer.Start();
+            _reconnectTimer = new Timer(_reconnectTimer_Elapsed, null, 0, 1000);
 
             Name = "ContinuousFutures";
         }
 
-        void _reconnectTimer_Elapsed(object sender, ElapsedEventArgs e)
+        void _reconnectTimer_Elapsed(object status)
         {
             if (!_client.Connected)
             {
-                _reconnectTimer.Stop();
+                _reconnectTimer.Change(Timeout.Infinite, 1000);
+
                 Log(LogLevel.Info, "CFB: trying to reconnect.");
                 try
                 {
@@ -949,15 +947,13 @@ namespace QDMSServer
             var contract = _instrumentMgr.FindInstruments(pred: searchFunc).FirstOrDefault();
 
 
-            var timer = new Timer(50) { AutoReset = false };
-            timer.Elapsed += (sender, e) =>
+            var timer = new Timer((status) =>
             {
                 lock (_frontContractReturnLock)
                 {
                     RaiseEvent(FoundFrontContract, this, new FoundFrontContractEventArgs(request.ID, contract, currentDate));
                 }
-            };
-            timer.Start();
+            }, null, 50, Timeout.Infinite);
         }
 
         public event EventHandler<HistoricalDataEventArgs> HistoricalDataArrived;

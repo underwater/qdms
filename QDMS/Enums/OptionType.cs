@@ -9,18 +9,15 @@ using System.ComponentModel;
 
 namespace QDMS
 {
-    [Serializable]
     public enum OptionType
     {
         /// <summary>
         /// Call Option
         /// </summary>
-        [Description("Call")]
         Call = 0,
         /// <summary>
         /// Put Option
         /// </summary>
-        [Description("Put")]
         Put = 1,
     }
 }

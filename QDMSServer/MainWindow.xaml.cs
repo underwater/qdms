@@ -7,7 +7,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Configuration;
 using System.Data.Entity;
 using System.Deployment.Application;
 using System.IO;
@@ -40,6 +39,7 @@ namespace QDMSServer
         public HistoricalDataBroker HistoricalBroker { get; set; }
         private readonly HistoricalDataServer _historicalDataServer;
         private readonly InstrumentsServer _instrumentsServer;
+        private readonly InstrumentManager _instrumentManager;
 
         private readonly IScheduler _scheduler;
 
@@ -129,8 +129,8 @@ namespace QDMSServer
 
             Instruments = new ObservableCollection<Instrument>();
 
-            var mgr = new InstrumentManager();
-            var instrumentList = mgr.FindInstruments(entityContext);
+            _instrumentManager = new InstrumentManager();
+            var instrumentList = _instrumentManager.FindInstruments(entityContext);
 
             foreach (Instrument i in instrumentList)
             {
@@ -144,14 +144,14 @@ namespace QDMSServer
                 Properties.Settings.Default.rtDBReqPort,
                 Properties.Settings.Default.rtDBPubPort,
                 Properties.Settings.Default.instrumentServerPort,
-                Properties.Settings.Default.hDBPort), new InstrumentManager(), connectImmediately: false);
+                Properties.Settings.Default.hDBPort), _instrumentManager, connectImmediately: false);
             var cfHistoricalBroker = new ContinuousFuturesBroker(new QDMSClient.QDMSClient(
                 "HDBCFClient",
                 "127.0.0.1",
                 Properties.Settings.Default.rtDBReqPort,
                 Properties.Settings.Default.rtDBPubPort,
                 Properties.Settings.Default.instrumentServerPort,
-                Properties.Settings.Default.hDBPort), new InstrumentManager(), connectImmediately: false);
+                Properties.Settings.Default.hDBPort), _instrumentManager, connectImmediately: false);
             var localStorage = DataStorageFactory.Get();
             RealTimeBroker = new RealTimeDataBroker(cfRealtimeBroker, localStorage,
                 new IRealTimeDataSource[] {
@@ -211,7 +211,7 @@ namespace QDMSServer
                     timeout: Properties.Settings.Default.updateJobTimeout,
                     toEmail: Properties.Settings.Default.updateJobEmail,
                     fromEmail: Properties.Settings.Default.updateJobEmailSender),
-                localStorage, new InstrumentManager());
+                localStorage, _instrumentManager);
             _scheduler.Start();
 
             //Grab jobs and schedule them
@@ -522,7 +522,7 @@ namespace QDMSServer
 
             foreach (Instrument i in InstrumentsGrid.SelectedItems)
             {
-                InstrumentManager.RemoveInstrument(i, DataStorageFactory.Get());
+                _instrumentManager.RemoveInstrument(i, DataStorageFactory.Get());
                 toRemove.Add(i);
             }
 

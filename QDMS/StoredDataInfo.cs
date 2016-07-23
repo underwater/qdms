@@ -11,7 +11,6 @@ using ProtoBuf;
 namespace QDMS
 {
     [ProtoContract]
-    [Serializable]
     public class StoredDataInfo
     {
         [ProtoMember(1)]
@@ -20,8 +19,10 @@ namespace QDMS
         [ProtoMember(2)]
         public BarSize Frequency { get; set; }
 
+        [Column(TypeName = "datetime(3)")]
         public DateTime EarliestDate { get; set; }
 
+        [Column(TypeName = "datetime(3)")]
         public DateTime LatestDate { get; set; }
 
         [ProtoMember(3)]
