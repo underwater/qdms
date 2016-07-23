@@ -5,6 +5,7 @@ My maior changes to the origin fork are:
 * refactoring, seperating logic to seperate assemblies (to make it more flexible to the individual need)
 * adding new data sources.
 * minor improvements.
+* add .NET Core support
 
 ---- 
 
