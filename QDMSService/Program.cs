@@ -25,7 +25,7 @@ namespace QDMSService
         protected void OnStart(string[] args)
         {
             string appPath = System.IO.Path.GetDirectoryName(AppContext.BaseDirectory);
-            string configFile = System.IO.Path.Combine(appPath, "DataServiceConfig.xml");
+            string configFile = @"file://"+System.IO.Path.Combine(appPath, "DataServiceConfig.xml");
 
             Uri uri = new Uri(configFile);
 

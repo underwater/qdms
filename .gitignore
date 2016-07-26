@@ -117,3 +117,9 @@ Thumbs.db
 # JetBrains Rider (C# IDE)
 .idea/
 *.sln.iml
+
+# .NET Core
+project.lock.json
+
+# Visual Studio Code
+.vscode

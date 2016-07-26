@@ -121,13 +121,13 @@ namespace QDMSServer
             _dataStorage.Error += DatasourceError;
             _dataStorage.HistoricalDataArrived += LocalStorageHistoricalDataArrived;
 
-            _connectionTimer = new Timer(ConnectionTimerElapsed, null, 0, 10000);
-
             _originalRequests = new ConcurrentDictionary<int, HistoricalDataRequest>();
             _subRequests = new ConcurrentDictionary<int, List<HistoricalDataRequest>>();
             _usedIDs = new List<int>();
 
             TryConnect();
+
+            _connectionTimer = new Timer(ConnectionTimerElapsed, null, 10000, 10000);
         }
 
         /// <summary>

@@ -128,14 +128,11 @@ namespace QDMSServer
             if (cfBroker == null)
                 throw new ArgumentNullException("cfBroker");
 
-            _connectionTimer = new Timer(ConnectionTimerElapsed, null, 0, 10000);
-
             DataSources = new ObservableDictionary<string, IRealTimeDataSource>
             {
                 {"SIM", new RealTimeSim()}/*,
                 {"Interactive Brokers", new IB(Properties.Settings.Default.rtdClientIBID)}*/
             };
-
             if (additionalDataSources != null)
             {
                 foreach (IRealTimeDataSource ds in additionalDataSources)
@@ -161,15 +158,17 @@ namespace QDMSServer
             _requests = new Dictionary<int, RealTimeDataRequest>();
             _usedIDs = new List<int>();
 
-            //connect to our data sources
-            TryConnect();
-
             //local storage
             _localStorage = localStorage;
 
             //start up the continuous futures broker
             _cfBroker = cfBroker;
             _cfBroker.FoundFrontContract += _cfBroker_FoundFrontContract;
+
+            //connect to our data sources
+            TryConnect();
+
+            _connectionTimer = new Timer(ConnectionTimerElapsed, null, 10000, 10000);
         }
 
         /// <summary>
@@ -612,18 +611,18 @@ namespace QDMSServer
                 {
                     Log(LogLevel.Info, string.Format("Real Time Data Broker: Trying to connect to data source {0}", s.Key));
 
-#if !DEBUG
+//#if !DEBUG
                     try
                     {
-#endif
+//#endif
                     s.Value.Connect();
-#if !DEBUG
+//#if !DEBUG
                     }
-                    catch (WebException ex)
+                    catch (Exception ex)
                     {
                         _logger.Error(ex, "Real Time Data Broker: Error while connecting to data source {0}", s.Key);
                     }
-#endif
+//#endif
 
                     }
             }
