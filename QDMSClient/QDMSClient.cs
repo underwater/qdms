@@ -313,6 +313,7 @@ namespace QDMSClient
             catch
             {
                 Dispose();
+                throw;
             }
 
             
