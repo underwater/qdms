@@ -8,6 +8,10 @@
     <Type>Sqlite</Type>
     <ConnectionString>Filename=./qdmsdata.db</ConnectionString>
   </LocalStorage>
+  <ClientDatabase>
+    <Type>Sqlite</Type>
+    <ConnectionString>Filename=./qdms.db</ConnectionString>
+  </ClientDatabase>
   <InstrumentService Port="7000"/>
   <HistoricalDataService Port="7001"/>
   <RealtimeDataService RequestPort="7002" PublisherPort="7003"/>

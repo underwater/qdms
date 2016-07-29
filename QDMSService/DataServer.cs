@@ -31,32 +31,17 @@ namespace QDMSService
         {
             _log.Info($"Server is initialisizing ...");
 
-            //create data db if it doesn't exist
-            /*DataDBContext dataContext;
-            try
-            {
-                dataContext = new DataDBContext();
-                //dataContext.Database.Initialize(false);
-            }
-            catch (System.Data.Entity.Core.ProviderIncompatibleException ex)
-            {
-                throw new NotSupportedException("Could not connect to context DataDB!", ex);
-            }
+            // test my db connection
+            DataDBContext dataContext;
+            dataContext = new DataDBContext(_config.LocalStorage.BuildDbContextOptions<DataDBContext>());
             dataContext.Dispose();
 
             MyDBContext entityContext;
-            try
-            {
-                entityContext = new MyDBContext();
-                //entityContext.Database.Initialize(false);
-            }
-            catch (System.Data.Entity.Core.ProviderIncompatibleException ex)
-            {
-                throw new NotSupportedException("Could not connect to context MyDB!", ex);
-            }*/
+            entityContext = new MyDBContext(_config.ClientDatabase.BuildDbContextOptions<MyDBContext>());
+            entityContext.Dispose();
 
             // initialisize helper classes
-            _instrumentManager = new InstrumentManager(_config.LocalStorage.BuildDbContextOptions<MyDBContext>());
+            _instrumentManager = new InstrumentManager(_config.ClientDatabase.BuildDbContextOptions<MyDBContext>());
 
             var cfRealtimeBroker = new ContinuousFuturesBroker(new QDMSClient.QDMSClient("RTDBCFClient", "127.0.0.1",
                 _config.RealtimeDataService.RequestPort, _config.RealtimeDataService.PublisherPort,
@@ -78,7 +63,8 @@ namespace QDMSService
                     localStorage = new QDMSServer.DataSources.SqlServerStorage(_config.LocalStorage.ConnectionString);
                     break;
                 case Config.DatabaseConnectionType.Sqlite:
-                    localStorage = new QDMS.Server.DataStorage.Sqlite.SqliteStorage(_config.LocalStorage.ConnectionString);
+                    localStorage = new QDMS.Server.DataStorage.Sqlite.SqliteStorage(
+                        _config.LocalStorage.BuildDbContextOptions<DataDBContext>());
                     break;
                 default:
                     throw new NotSupportedException("Not supported local storage type: " + _config.LocalStorage.Type);

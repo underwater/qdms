@@ -7,6 +7,9 @@ namespace QDMSService.Config
         [Required]
         public DatabaseConnectionConfig LocalStorage { get; set; }
         
+        [Required]
+        public DatabaseConnectionConfig ClientDatabase { get; set; }
+
         public InstrumentServiceConfig InstrumentService { get; set; }
 
         public HistoricalDataServiceConfig HistoricalDataService { get; set; }
