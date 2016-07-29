@@ -20,10 +20,10 @@ namespace SampleApp
             QDMSClient.QDMSClient client = new QDMSClient.QDMSClient(
                 "SampleClient",
                 "127.0.0.1",
-                5556,
-                5557,
-                5558,
-                5555);
+                7002,
+                7003,
+                7000,
+                7001);
 
             //hook up the events needed to receive data & error messages
             client.HistoricalDataReceived += client_HistoricalDataReceived;
