@@ -11,7 +11,7 @@ namespace EntityData
 {
     public class DataDBContext : DbContext
     {
-        public DataDBContext(DbContextOptions<DataDBContext> options)
+        public DataDBContext(DbContextOptions options)
             : base(options)
         {
         }

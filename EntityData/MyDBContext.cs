@@ -46,6 +46,8 @@ namespace EntityData
             modelBuilder.Entity<InstrumentSession>().ToTable("instrumentsessions");
             modelBuilder.Entity<TemplateSession>().ToTable("templatesessions");
 
+            modelBuilder.Entity<TagInstrument>()
+                .HasKey(c => new {c.InstrumentID, c.TagID});
             modelBuilder.Entity<TagInstrument>().HasOne(x => x.Instrument)
                 .WithMany()
                 .HasForeignKey(x => x.InstrumentID);
