@@ -82,11 +82,8 @@ namespace QDMS.Server.DataSources
         }
 
         //Downloads data from EODData
-        private List<OHLCBar> GetData(HistoricalDataRequest req)
-        {
-            throw new NotImplementedException();
-        }
-
+        public abstract List<OHLCBar> GetData(HistoricalDataRequest req);
+        
 
         ///<summary>
         /// Raise the event in a threadsafe manner

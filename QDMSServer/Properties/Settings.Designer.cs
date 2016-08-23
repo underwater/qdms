@@ -413,5 +413,29 @@ namespace QDMSServer.Properties {
                 this["barChartApiKey"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string eODDataUserName {
+            get {
+                return ((string)(this["eODDataUserName"]));
+            }
+            set {
+                this["eODDataUserName"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string eODDataPassword {
+            get {
+                return ((string)(this["eODDataPassword"]));
+            }
+            set {
+                this["eODDataPassword"] = value;
+            }
+        }
     }
 }

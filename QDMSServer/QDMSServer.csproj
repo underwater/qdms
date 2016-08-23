@@ -480,6 +480,10 @@
       <Project>{7979d0db-e6b4-410c-b3bb-cba4c2888cf3}</Project>
       <Name>QDMS.Server.DataSources.Bloomberg</Name>
     </ProjectReference>
+    <ProjectReference Include="..\QDMS.Server.DataSources.EODData\QDMS.Server.DataSources.EODData.csproj">
+      <Project>{19A2D502-D0AB-40BB-8284-1FB59DF731CA}</Project>
+      <Name>QDMS.Server.DataSources.EODData</Name>
+    </ProjectReference>
     <ProjectReference Include="..\QDMS.Server.DataSources.ForexFeed\QDMS.Server.DataSources.ForexFeed.csproj">
       <Project>{55180c6d-a985-4171-bc78-e9b161164785}</Project>
       <Name>QDMS.Server.DataSources.ForexFeed</Name>

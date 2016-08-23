@@ -116,6 +116,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="QDMS.Server.DataSources\EODDataTests.cs" />
     <Compile Include="QDMSClient\QDMSClientTest.cs" />
     <Compile Include="QDMSServer\BarChartUtilsTest.cs" />
     <Compile Include="QDMSServer\ConcurrentNotifierBlockingListTest.cs" />
@@ -155,6 +156,10 @@
     <ProjectReference Include="..\QDMS.Server.DataSources.BarChart\QDMS.Server.DataSources.BarChart.csproj">
       <Project>{798fdb21-915d-4f54-b1cb-753a636b1c90}</Project>
       <Name>QDMS.Server.DataSources.BarChart</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QDMS.Server.DataSources.EODData\QDMS.Server.DataSources.EODData.csproj">
+      <Project>{19A2D502-D0AB-40BB-8284-1FB59DF731CA}</Project>
+      <Name>QDMS.Server.DataSources.EODData</Name>
     </ProjectReference>
     <ProjectReference Include="..\QDMS.Server\QDMS.Server.csproj">
       <Project>{c5427849-6011-4198-bca4-d7cdcf971e7c}</Project>

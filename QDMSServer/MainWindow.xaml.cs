@@ -27,6 +27,7 @@ using Quartz;
 using Quartz.Impl;
 using Quartz.Impl.Matchers;
 using QDMSServer.DataSources;
+using QDMS.Server.DataSources;
 
 namespace QDMSServer
 {
@@ -167,7 +168,8 @@ namespace QDMSServer
                     //new Forexite(),
                     new IB(Properties.Settings.Default.histClientIBID),
                     new Quandl(Properties.Settings.Default.quandlAuthCode),
-                    new BarChart(Properties.Settings.Default.barChartApiKey)
+                    new BarChart(Properties.Settings.Default.barChartApiKey),
+                    new EOD(Properties.Settings.Default.eODDataUserName, Properties.Settings.Default.eODDataPassword)
                 });
 
             //create the various servers
