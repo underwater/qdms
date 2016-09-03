@@ -22,7 +22,7 @@ namespace QDMSServer
         /// Convert a FRED series to a QDMS instrument.
         /// Datasource needs to be set externally to FRED.
         /// </summary>
-        public static Instrument SeriesToInstrument(FredSeries series)
+        public static Instrument SeriesToInstrument(FredSeries series, Datasource datasource = null)
         {
             return new Instrument
             {
@@ -30,7 +30,8 @@ namespace QDMSServer
                 DatasourceSymbol = series.ID,
                 Name = series.Title,
                 Multiplier = 1,
-                Type = InstrumentType.Index
+                Type = InstrumentType.Index,
+                Datasource = datasource
             };
         }
 

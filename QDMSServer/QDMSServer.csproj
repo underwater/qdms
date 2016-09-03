@@ -285,7 +285,10 @@
     <Compile Include="ValueConverters\StringToNullableConverter.cs" />
     <Compile Include="ValueConverters\TimeSpanConverter.cs" />
     <Compile Include="ValueConverters\TZToStringConverter.cs" />
+    <Compile Include="ViewModels\AddInstrumentFredViewModel.cs" />
     <Compile Include="ViewModels\AddInstrumentIbViewModel.cs" />
+    <Compile Include="ViewModels\BaseViewModel.cs" />
+    <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="Windows\AboutWindow.xaml.cs">
       <DependentUpon>AboutWindow.xaml</DependentUpon>
     </Compile>
@@ -298,8 +301,8 @@
     <Compile Include="Windows\AddInstrumentQuandlWindow.xaml.cs">
       <DependentUpon>AddInstrumentQuandlWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\AddInstrumentFredlWindow.xaml.cs">
-      <DependentUpon>AddInstrumentFredlWindow.xaml</DependentUpon>
+    <Compile Include="Windows\AddInstrumentFredWindow.xaml.cs">
+      <DependentUpon>AddInstrumentFredWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\ChangelogWindow.xaml.cs">
       <DependentUpon>ChangelogWindow.xaml</DependentUpon>
@@ -373,7 +376,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\AddInstrumentFredlWindow.xaml">
+    <Page Include="Windows\AddInstrumentFredWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

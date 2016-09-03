@@ -76,7 +76,7 @@ namespace QDMSServer
                 {
                     InstrumentsGrid.DeserializeLayout(File.ReadAllText(layoutFile));
                 }
-                catch 
+                catch
                 {
                 }
             }
@@ -86,9 +86,16 @@ namespace QDMSServer
             //target is where the log managers send their logs, here we grab the memory target which has a Subject to observe
             var target = LogManager.Configuration.AllTargets.Single(x => x.Name == "myTarget") as MemoryTarget;
 
+
+
             //we subscribe to the messages and send them all to the LogMessages collection
             if (target != null)
-                target.Messages.Subscribe(msg => LogMessages.Add(msg));
+            {
+                target.Messages.Subscribe(msg => 
+                {
+                    //LogMessages.Add(msg);
+                });
+            }
 
             //build the instruments grid context menu
             //we want a button for each BarSize enum value in the UpdateFreqSubMenu menu
@@ -181,7 +188,7 @@ namespace QDMSServer
             _realTimeServer.StartServer();
             _instrumentsServer.StartServer();
             _historicalDataServer.StartServer();
-            
+
             //we also need a client to make historical data requests with
             _client = new QDMSClient.QDMSClient(
                 "SERVERCLIENT",
@@ -835,7 +842,7 @@ namespace QDMSServer
                     instrument.SessionsSource = SessionsSource.Template;
                     instrument.SessionTemplateID = templateID;
 
-                    if(instrument.Sessions == null)
+                    if (instrument.Sessions == null)
                     {
                         instrument.Sessions = new List<InstrumentSession>();
                     }
@@ -851,7 +858,7 @@ namespace QDMSServer
                     instrument.Sessions.Clear();
 
                     //Add the new sessions
-                    foreach(TemplateSession ts in templateSessions)
+                    foreach (TemplateSession ts in templateSessions)
                     {
                         instrument.Sessions.Add(ts.ToInstrumentSession());
                     }
