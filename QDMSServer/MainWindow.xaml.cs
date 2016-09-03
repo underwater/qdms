@@ -446,16 +446,16 @@ namespace QDMSServer
         {
             using (var context = new MyDBContext())
             {
-                var window = new AddInstrumentFredWindow(context);
+                var window = new AddInstrumentFredWindow().ShowDialog();
 
-                if (window.AddedInstruments != null)
-                {
-                    foreach (Instrument i in window.AddedInstruments)
-                    {
-                        Instruments.Add(i);
-                    }
-                    window.Close();
-                }
+                //if (window.AddedInstruments != null)
+                //{
+                //    foreach (Instrument i in window.AddedInstruments)
+                //    {
+                //        Instruments.Add(i);
+                //    }
+                //    window.Close();
+                //}
             }
         }
 

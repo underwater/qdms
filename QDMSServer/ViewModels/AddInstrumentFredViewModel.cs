@@ -18,7 +18,12 @@ namespace QDMSServer.ViewModels
 
         public MainViewModel MainViewModel { get; set; }
 
-        public ObservableCollection<FredUtils.FredSeries> Series { get; set; }
+        private ObservableCollection<FredUtils.FredSeries> _series;
+        public ObservableCollection<FredUtils.FredSeries> Series
+        {
+            get { return _series; }
+            set { this.RaiseAndSetIfChanged(ref _series, value); }
+        }
 
         public IList<FredUtils.FredSeries> SelectedSeries
         {
@@ -44,7 +49,7 @@ namespace QDMSServer.ViewModels
 
         public AddInstrumentFredViewModel() : base()
         {
-            var canSearch = this.WhenAnyValue(x => !string.IsNullOrEmpty(x.SearchText));
+            var canSearch = this.WhenAny(x => x.SearchText, x => !string.IsNullOrEmpty(x.Value));
             SearchCommand = ReactiveCommand.CreateAsyncTask(canSearch, async _ =>
             {
                 IsBusy = true;
@@ -58,7 +63,7 @@ namespace QDMSServer.ViewModels
                 Status = Series?.Count + " contracts found";
             });
 
-            AddCommand = ReactiveCommand.Create(this.WhenAnyValue(x => x.SelectedSeries != null));
+            AddCommand = ReactiveCommand.Create(this.WhenAny(x => x.SelectedSeries, x => x.Value != null));
             AddCommand.Subscribe(x =>
             {
                 using (var context = new MyDBContext())

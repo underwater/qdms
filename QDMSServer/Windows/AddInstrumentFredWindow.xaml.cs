@@ -14,91 +14,61 @@ using EntityData;
 using MahApps.Metro.Controls;
 using NLog;
 using QDMS;
+using ReactiveUI;
+using QDMSServer.ViewModels;
+using System.Reactive.Linq;
+using System.Windows.Controls;
+using Splat;
 
 namespace QDMSServer
 {
     /// <summary>
     /// Interaction logic for AddInstrumentQuandlWindow.xaml
     /// </summary>
-    public partial class AddInstrumentFredWindow : MetroWindow
+    public partial class AddInstrumentFredWindow : MetroWindow, IViewFor<AddInstrumentFredViewModel>
     {
-        public ObservableCollection<FredUtils.FredSeries> Series { get; set; }
-        private readonly Logger _logger = LogManager.GetCurrentClassLogger();
+        public AddInstrumentFredViewModel ViewModel { get; set; }
 
-        public List<Instrument> AddedInstruments { get; set; }
-
-        private readonly Datasource _thisDS;
-
-        private const string ApiKey = "f8d71bdcf1d7153e157e0baef35f67db";
-
-        public AddInstrumentFredWindow(MyDBContext context)
+        object IViewFor.ViewModel
         {
-            DataContext = this;
+            get { return ViewModel; }
 
-            AddedInstruments = new List<Instrument>();
+            set { ViewModel = (AddInstrumentFredViewModel)value; }
+        }
 
-            Series = new ObservableCollection<FredUtils.FredSeries>();
 
+        public AddInstrumentFredWindow()
+        {
             InitializeComponent();
+            ViewModel = Locator.Current.GetService<AddInstrumentFredViewModel>();
+            DataContext = ViewModel;
 
-            _thisDS = context.Datasources.First(x => x.Name == "FRED");
-
-            ShowDialog();
-        }
-
-        private async void Search()
-        {
-            Series.Clear();
-            StatusLabel.Content = "Searching...";
-
-            var foundSeries = await FredUtils.FindSeries(SymbolTextBox.Text, ApiKey);
-            foreach (var i in foundSeries)
-            {
-                Series.Add(i);
-            }
-
-            StatusLabel.Content = foundSeries.Count() + " contracts found";
-        }
-
-        private void SymbolTextBox_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Enter)
-                Search();
-        }
-
-        private void SearchBtn_Click(object sender, RoutedEventArgs e)
-        {
-            Search();
-        }
-
-        private void CloseBtn_Click(object sender, RoutedEventArgs e)
-        {
-            Hide();
-        }
-
-        private void AddBtn_Click(object sender, RoutedEventArgs e)
-        {
-            int count = 0;
-
-            var instrumentSource = new InstrumentManager();
-
-            foreach (FredUtils.FredSeries series in InstrumentGrid.SelectedItems)
-            {
-                var newInstrument = FredUtils.SeriesToInstrument(series);
-                newInstrument.Datasource = _thisDS;
-
-                try
+            Observable.FromEventPattern<SelectionChangedEventArgs>(InstrumentGrid, nameof(InstrumentGrid.SelectionChanged))
+                .Subscribe(x =>
                 {
-                    if (instrumentSource.AddInstrument(newInstrument) != null)
-                        count++;
-                    AddedInstruments.Add(newInstrument);
-                }
-                catch (Exception ex)
+                    ViewModel.SelectedSeries = InstrumentGrid.SelectedItems.Cast<FredUtils.FredSeries>().ToList();
+                });
+
+            Observable.FromEventPattern<KeyEventArgs>(SearchTextBox, nameof(SearchTextBox.KeyDown))
+                .Where(e => e.EventArgs.Key == Key.Enter)
+                .InvokeCommand(ViewModel.SearchCommand);
+
+
+            ViewModel.CloseCommand.Subscribe(x => Hide());
+
+            ViewModel.WhenAnyValue(x => x.IsBusy).Subscribe(isBusy =>
+            {
+                if (isBusy)
                 {
-                    MessageBox.Show(ex.Message, "Error");
+                    SearchBtn.Content = new ProgressRing() { Width = 10, Height = 10 };
                 }
-            }
-            StatusLabel.Content = string.Format("{0}/{1} instruments added.", count, InstrumentGrid.SelectedItems.Count);
+                else
+                {
+                    SearchBtn.Content = "Search";
+                }
+            });
+            
         }
+
     }
 }

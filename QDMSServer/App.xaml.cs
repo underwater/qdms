@@ -1,4 +1,6 @@
-﻿using System;
+﻿using QDMSServer.ViewModels;
+using Splat;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -13,6 +15,18 @@ namespace QDMSServer
     /// </summary>
     public partial class App : Application
     {
+        public App()
+        {
+            new AppBootstrapper();
+        }
+        
+    }
 
+    public class AppBootstrapper
+    {
+        public AppBootstrapper()
+        {
+            Locator.CurrentMutable.Register(() => new AddInstrumentFredViewModel(), typeof(AddInstrumentFredViewModel));
+        }
     }
 }
