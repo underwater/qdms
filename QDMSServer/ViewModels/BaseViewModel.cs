@@ -21,14 +21,14 @@ namespace QDMSServer.ViewModels
 
         public ReactiveCommand<object> CloseCommand { get; set; }
 
-        private bool _isBusy;
+        protected bool _isBusy;
         public bool IsBusy
         {
             get { return _isBusy; }
             set { this.RaiseAndSetIfChanged(ref _isBusy, value); }
         }
 
-        public void Dispose()
+        public virtual void Dispose()
         {
             GC.SuppressFinalize(this);
         }

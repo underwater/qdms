@@ -26,15 +26,31 @@
         </Grid.RowDefinitions>
         <Label Grid.Row="0" Content="Search: " VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,10,0,0" KeyboardNavigation.IsTabStop="False" Width="50" Height="26"/>
 
-        <TextBox Name="SymbolTextBox" Grid.Row="0" HorizontalAlignment="Left" Height="26" Margin="89,10,0,0" KeyDown="SymbolTextBox_KeyDown"
-                 TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="149" />
+        <TextBox Name="SearchTextBox" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" Grid.Row="0" HorizontalAlignment="Left" Height="26" Margin="89,10,0,0"
+                 TextWrapping="Wrap" VerticalAlignment="Top" Width="180" />
 
-        <Button Grid.Row="0" Name="SearchBtn" Content="Search" HorizontalAlignment="Left" Margin="283,10,0,0" 
-                VerticalAlignment="Top"  Width="75" Height="26" Click="SearchBtn_Click" />
+        <Button Grid.Row="0" Content="Search" HorizontalAlignment="Left" Margin="283,10,0,0" 
+                VerticalAlignment="Top" Command="{Binding SearchCommand}" Width="75" Height="26" />
 
 
+        <StackPanel Grid.Row="0" HorizontalAlignment="Right" Orientation="Horizontal">
+            <Button Command="{Binding PrevPageCommand}"  Width="50" Height="30" Content="&lt;" Margin="5"/>
 
-        <DataGrid Name="InstrumentGrid" ItemsSource="{Binding Instruments}" SelectionMode="Extended" AutoGenerateColumns="False" IsReadOnly="False" 
+            <TextBlock VerticalAlignment="Center" FontSize="16" Margin="10">
+                <Run Text="Page "></Run>
+                <Run Text="{Binding CurrentPage}"></Run>
+                <Run Text=" of "></Run>
+                <Run Text="{Binding TotalPage}"></Run>
+            </TextBlock>
+
+            <Button Command="{Binding NextPageCommand}" Content=">" Width="50" Height="30" Margin="5" />
+            
+            <!--<TextBox Name="CurrentPageTextBox" KeyDown="TextBox_KeyDown" Grid.Row="0" HorizontalAlignment="Left" Height="23" Margin="640,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="42"/>-->
+
+        </StackPanel>
+
+
+        <DataGrid Name="InstrumentGrid" ItemsSource="{Binding Items}" SelectionMode="Extended" AutoGenerateColumns="False" IsReadOnly="False" 
                          HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  Grid.Row="1" CanUserAddRows="False" RowStyle="{DynamicResource DataGridRowStyle}">
 
             <DataGrid.Columns>
@@ -55,24 +71,25 @@
                 <DataGridTextColumn Header="Category" Binding="{Binding Path=Category}" Width="85"/>
                 <DataGridTextColumn Header ="Sub Cat." Binding="{Binding Path=Subcategory}" Width="80"/>
 
-                <DataGridComboBoxColumn DisplayMemberPath="Name" x:Name="ExchangeComboBox"
+                <DataGridComboBoxColumn DisplayMemberPath="Name" x:Name="ExchangeComboBox" ItemsSource="{Binding Exchanges}"
                                         SelectedItemBinding="{Binding Path=Exchange}" Header="Exchange" Width="60"/>
-                <DataGridComboBoxColumn DisplayMemberPath="Name" x:Name="PrimaryExchangeComboBox"
+                <DataGridComboBoxColumn DisplayMemberPath="Name" x:Name="PrimaryExchangeComboBox" ItemsSource="{Binding Exchanges}"
                                         SelectedItemBinding="{Binding Path=PrimaryExchange}" Header="Prim. Exch." Width="60"/>
-                
+
                 <DataGridTextColumn Binding="{Binding Path=ValidExchanges}" Header="Valid Exch." Width="100"/>
             </DataGrid.Columns>
         </DataGrid>
 
 
 
-        <Button Name="CloseBtn" Click="CloseBtn_Click" Content="Close" HorizontalAlignment="Right" Margin="0,7,10,7" Grid.Row="2" 
-                VerticalAlignment="Center"  Width="75" Height="26"/>
-        <Button Name="AddBtn" Click="AddBtn_Click" Content="Add" HorizontalAlignment="Right" Margin="0,7,94,7" Grid.Row="2" VerticalAlignment="Center"  Width="75" Height="26"/>
-        <Label Name="StatusLabel" Content="" Width="500" HorizontalAlignment="Left" Margin="10,10,0,0" Grid.Row="2" VerticalAlignment="Top" Height="23"/>
-        <TextBox Name="CurrentPageTextBox" KeyDown="TextBox_KeyDown" Grid.Row="0" HorizontalAlignment="Left" Height="23" Margin="640,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="42"/>
-        <Button Grid.Row="0" Name="PageBackBtn" Click="PageBackBtn_OnClick" Content="&lt;" HorizontalAlignment="Left" Margin="608,10,0,0" VerticalAlignment="Top" Width="27"/>
-        <Button Grid.Row="0" Name="PageForwardBtn" Click="PageForwardBtn_Click" Content=">" HorizontalAlignment="Left" Margin="687,10,0,0" VerticalAlignment="Top" Width="27"/>
-        <Label Grid.Row="0"  Content="Page:" HorizontalAlignment="Left" Margin="556,10,0,0" VerticalAlignment="Top" Width="47"/>
+        <StackPanel Grid.Row="2" HorizontalAlignment="Right" Orientation="Horizontal" Margin="15 5">
+            <Button  Content="Close" Command="{Binding CloseCommand}" VerticalAlignment="Center" Margin="15 0"  Width="75" Height="26"/>
+            <Button  Content="Add"  Command="{Binding AddCommand}" VerticalAlignment="Center"  Margin=" 0" Width="75" Height="26"/>
+        </StackPanel>
+        
+        <TextBlock FontWeight="Bold" Margin="10" VerticalAlignment="Center" Text="{Binding Status}" HorizontalAlignment="Left" Grid.Row="2"/>
+
+        <controls:MetroProgressBar Grid.Row="2" IsIndeterminate="{Binding IsBusy}" VerticalAlignment="Bottom"></controls:MetroProgressBar>
+
     </Grid>
 </controls:MetroWindow>

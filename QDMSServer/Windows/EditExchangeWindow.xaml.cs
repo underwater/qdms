@@ -71,7 +71,7 @@ namespace QDMSServer
             }
 
             //save to db
-            using (var entityContext = new MyDBContext())
+            using (var entityContext = new QDMSDbContext())
             {
                 bool nameExists = entityContext.Exchanges.Any(x => x.Name == TheExchange.Name);
                 if (nameExists && (_addingNew || _originalExchange.Name != TheExchange.Name))

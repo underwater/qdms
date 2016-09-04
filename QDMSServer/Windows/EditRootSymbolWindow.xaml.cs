@@ -73,7 +73,7 @@ namespace QDMSServer
             }
 
             
-            using (var entityContext = new MyDBContext())
+            using (var entityContext = new QDMSDbContext())
             {
                 //check that the symbol doesn't already exist
                 bool symbolExists = entityContext.UnderlyingSymbols.Count(x => x.Symbol == TheSymbol.Symbol) > 0;

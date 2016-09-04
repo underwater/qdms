@@ -15,7 +15,7 @@ namespace QDMSServer
 {
     public static class Seed
     {
-        public static void SeedDatasources(MyDBContext context)
+        public static void SeedDatasources(QDMSDbContext context)
         {
             var ib = new Datasource { Name = "Interactive Brokers" };
             var yahoo = new Datasource { Name = "Yahoo" };
@@ -30,7 +30,7 @@ namespace QDMSServer
 
         public static void DoSeed()
         {
-            var context = new MyDBContext();
+            var context = new QDMSDbContext();
 
             #region underlyingSymbols
             var eur = new UnderlyingSymbol

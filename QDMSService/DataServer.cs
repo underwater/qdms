@@ -44,10 +44,10 @@ namespace QDMSService
             }
             dataContext.Dispose();
 
-            MyDBContext entityContext;
+            QDMSDbContext entityContext;
             try
             {
-                entityContext = new MyDBContext(_config.DataStorage.ConnectionString);
+                entityContext = new QDMSDbContext(_config.DataStorage.ConnectionString);
                 entityContext.Database.Initialize(false);
             }
             catch (System.Data.Entity.Core.ProviderIncompatibleException ex)

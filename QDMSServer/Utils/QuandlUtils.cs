@@ -12,15 +12,19 @@ using System.Windows;
 using System.Xml.Linq;
 using System.Linq;
 using QDMS;
+using System.Threading.Tasks;
 
 namespace QDMSServer
 {
     public static class QuandlUtils
     {
+        public static int TotalItemsCount { get; set; }
+        public static int ItemsPerPage { get; set; }
+
         /// <summary>
         /// Takes XML formated data from Quandl and turns it into a List of OHLCBars.
         /// </summary>
-        public static List<OHLCBar> ParseXML(string data)
+        public static List<OHLCBar> ParseXml(string data)
         {
             var doc = XDocument.Parse(data);
             var bars = new List<OHLCBar>();
@@ -152,7 +156,7 @@ namespace QDMSServer
         /// <param name="count">The number of items found.</param>
         /// <param name="page">The "page" of results to download.</param>
         /// <returns>A list of instruments matching the search parameter.</returns>
-        public static List<Instrument> FindInstruments(string search, out int count, int page = 1)
+        public async static Task<IEnumerable<Instrument>> FindInstruments(string search, int page = 1)
         {
             page = Math.Max(1, page);
             string url = string.Format("http://www.quandl.com/api/v1/datasets.xml?query={0}&page={1}",
@@ -164,10 +168,10 @@ namespace QDMSServer
             using (var webClient = new WebClient())
             {
                 //exceptions should be handled further up
-                xml = webClient.DownloadString(url);
+                xml = await webClient.DownloadStringTaskAsync(url);
             }
 
-            return ParseInstrumentXML(xml, out count);
+            return ParseInstrumentToXml(xml);
         }
 
 
@@ -201,13 +205,24 @@ namespace QDMSServer
         //http://www.eia.gov/cfapps/ipdbproject/XMLinclude_3.cfm?tid=5&pid=53&pdid=53,55,57,58,59,56,54,62,63,64,65,66,67,68&aid=1&cid=regions&titleStr=Total%20Oil%20Supply%20(Thousand%20Barrels%20Per%20Day)&syid=2007&eyid=2011&form=&defaultid=3&typeOfUnit=STDUNIT&unit=TBPD&products=
         //</display-url>
         //</doc>
-        public static List<Instrument> ParseInstrumentXML(string xml, out int count)
+        public static List<Instrument> ParseInstrumentToXml(string xml)
         {
+            int count;
+            int perpage;
             var instruments = new List<Instrument>();
 
             var doc = XDocument.Parse(xml);
             if (doc.Root == null) throw new Exception("Could not parse instrument XML: root null.");
             if (doc.Root.Element("docs") == null) throw new Exception("Could not parse instrument XML: root null.");
+
+            if(doc.Root.Element("per-page") != null)
+            {
+                int.TryParse(doc.Root.Element("per-page").Value, out perpage);
+            }
+            else
+            {
+                perpage = 0;
+            }
 
             if (doc.Root.Element("total-count") != null)
             {
@@ -217,6 +232,8 @@ namespace QDMSServer
             {
                 count = 0;
             }
+            ItemsPerPage = perpage;
+            TotalItemsCount = count;
 
             foreach (var instXML in doc.Root.Element("docs").Elements("doc"))
             {

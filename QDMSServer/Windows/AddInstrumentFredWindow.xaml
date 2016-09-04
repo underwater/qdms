@@ -11,7 +11,11 @@
     BorderThickness="1">
 
     <controls:MetroWindow.Resources>
-
+        <ObjectDataProvider x:Key="InstrumentTypes" MethodName="GetValues" ObjectType="{x:Type system:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type Type="qdms:InstrumentType"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
     </controls:MetroWindow.Resources>
 
     <Grid>
@@ -30,7 +34,7 @@
 
         </Button>
 
-        <DataGrid Name="InstrumentGrid" ItemsSource="{Binding Series}" SelectionMode="Extended" AutoGenerateColumns="False" IsReadOnly="False" 
+        <DataGrid Name="InstrumentGrid" ItemsSource="{Binding Items}" SelectionMode="Extended" AutoGenerateColumns="False" IsReadOnly="False" 
                          HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  Grid.Row="1" CanUserAddRows="False" RowStyle="{DynamicResource DataGridRowStyle}">
 
             <DataGrid.Columns>
@@ -45,14 +49,13 @@
             </DataGrid.Columns>
         </DataGrid>
         <StackPanel HorizontalAlignment="Right" Grid.Row="2" Orientation="Horizontal">
-            <Button Margin="15 5" Name="CloseBtn" Command="{Binding CloseCommand}" Content="Close" VerticalAlignment="Center"  Width="75" Height="26"/>
+            <Button Margin="15 5" Command="{Binding CloseCommand}" Content="Close" VerticalAlignment="Center"  Width="75" Height="26"/>
             <Button Margin="15 5" Command="{Binding AddCommand}" Content="Add" VerticalAlignment="Center" Width="75" Height="26"/>
         </StackPanel>
 
-
         <StackPanel HorizontalAlignment="Left" Grid.Row="2" Margin="10" Orientation="Horizontal">
-            <TextBlock Text="{Binding Status}" VerticalAlignment="Center" />
+            <TextBlock Text="{Binding Status}" FontWeight="Bold" VerticalAlignment="Center" />
         </StackPanel>
-
+        <controls:MetroProgressBar Grid.Row="2" IsIndeterminate="{Binding IsBusy}" VerticalAlignment="Bottom"></controls:MetroProgressBar>
     </Grid>
 </controls:MetroWindow>

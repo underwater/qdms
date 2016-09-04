@@ -40,7 +40,7 @@ namespace QDMSServer
             InitializeComponent();
             
             //reload the instrument first to make sure we have up-to-date data
-            using (var context = new MyDBContext())
+            using (var context = new QDMSDbContext())
             {
                 context.Instruments.Attach(instrument);
                 context.Entry(instrument).Reload();

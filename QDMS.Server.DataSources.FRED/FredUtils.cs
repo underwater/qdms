@@ -79,7 +79,7 @@ namespace QDMSServer
                 xml = await webClient.DownloadStringTaskAsync(url);
             }
 
-            return ParseSeriesXML(xml);
+            return ParseSeriesToXml(xml);
         }
 
         //Format:
@@ -93,7 +93,7 @@ namespace QDMSServer
         //seasonal_adjustment_short="SA" last_updated="2013-07-12 11:01:06-05" 
         //popularity="52" 
         //notes="The MSI measure the flow of monetary services received each period by households and firms from their holdings of monetary assets (levels of the indexes are sometimes referred to as Divisia monetary aggregates). Preferred benchmark rate equals 100 basis points plus the largest rate in the set of rates. Alternative benchmark rate equals the larger of the preferred benchmark rate and the Baa corporate bond yield. More information about the new MSI can be found at http://research.stlouisfed.org/msi/index.html."/>
-        private static IEnumerable<FredSeries> ParseSeriesXML(string xml)
+        private static IEnumerable<FredSeries> ParseSeriesToXml(string xml)
         {
             var serializer = new XmlSerializer(typeof(FredSeries));
             XDocument xdoc;

@@ -59,7 +59,7 @@ namespace QDMSServer
             }
 
             //save to db
-            using (var entityContext = new MyDBContext())
+            using (var entityContext = new QDMSDbContext())
             {
                 bool nameExists = entityContext.SessionTemplates.Any(x => x.Name == TheTemplate.Name);
                 bool addingNew = TheTemplate.ID == -1;

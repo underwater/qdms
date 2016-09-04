@@ -36,7 +36,7 @@ namespace QDMSServer
             Tags = new ObservableCollection<Tag>();
             Instruments = new ObservableCollection<Instrument>();
 
-            using (var context = new MyDBContext())
+            using (var context = new QDMSDbContext())
             {
                 var jobs = context.DataUpdateJobs.ToList();
                 foreach (DataUpdateJobDetails job in jobs)
@@ -67,7 +67,7 @@ namespace QDMSServer
             Jobs.Add(job);
             JobsGrid.SelectedItem = job;
 
-            using (var context = new MyDBContext())
+            using (var context = new QDMSDbContext())
             {
                 context.DataUpdateJobs.Add(job);
                 context.SaveChanges();
@@ -83,7 +83,7 @@ namespace QDMSServer
             var dialogResult = MessageBox.Show(string.Format("Are you sure you want to delete {0}?", selectedJob.Name), "Delete Job", MessageBoxButton.YesNo);
             if (dialogResult != MessageBoxResult.Yes) return;
 
-            using (var context = new MyDBContext())
+            using (var context = new QDMSDbContext())
             {
                 var job = context.DataUpdateJobs.FirstOrDefault(x => x.ID == selectedJob.ID);
                 if (job == null) return;
@@ -108,7 +108,7 @@ namespace QDMSServer
                 return;
             }
 
-            using (var context = new MyDBContext())
+            using (var context = new QDMSDbContext())
             {
                 var job = (DataUpdateJobDetails)JobsGrid.SelectedItem;
 

@@ -42,7 +42,7 @@ namespace QDMSServer
             Data = new ObservableCollection<OHLCBar>();
 
             //grab and update the instrument
-            using (var context = new MyDBContext())
+            using (var context = new QDMSDbContext())
             {
                 context.Instruments.Attach(instrument);
                 context.Entry(instrument).Reload();

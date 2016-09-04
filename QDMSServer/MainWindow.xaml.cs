@@ -111,7 +111,7 @@ namespace QDMSServer
             }
 
             //create metadata db if it doesn't exist
-            var entityContext = new MyDBContext();
+            var entityContext = new QDMSDbContext();
             entityContext.Database.Initialize(false);
 
             //seed the datasources no matter what, because these are added frequently
@@ -431,20 +431,20 @@ namespace QDMSServer
         {
             var window = new AddInstrumentQuandlWindow();
 
-            if (window.AddedInstruments != null)
-            {
-                foreach (Instrument i in window.AddedInstruments)
-                {
-                    Instruments.Add(i);
-                }
-                window.Close();
-            }
+            //if (window.AddedInstruments != null)
+            //{
+            //    foreach (Instrument i in window.AddedInstruments)
+            //    {
+            //        Instruments.Add(i);
+            //    }
+            //    window.Close();
+            //}
         }
 
         //show the FRED add instrument window
         private void AddInstrumentFredBtn_OnClick(object sender, RoutedEventArgs e)
         {
-            using (var context = new MyDBContext())
+            using (var context = new QDMSDbContext())
             {
                 var window = new AddInstrumentFredWindow().ShowDialog();
 
@@ -627,7 +627,7 @@ namespace QDMSServer
         //adds or removes a tag from one or more instruments
         private void SetTag_ItemClick(object sender, RoutedEventArgs routedEventArgs)
         {
-            using (var context = new MyDBContext())
+            using (var context = new QDMSDbContext())
             {
                 var selectedInstruments = InstrumentsGrid.SelectedItems;
                 var btn = (MenuItem)routedEventArgs.Source;
@@ -713,7 +713,7 @@ namespace QDMSServer
 
             var newTagTextBox = (TextBox)sender;
 
-            using (var context = new MyDBContext())
+            using (var context = new QDMSDbContext())
             {
                 string newTagName = newTagTextBox.Text;
                 if (context.Tags.Any(x => x.Name == newTagName)) return; //tag already exists
@@ -787,7 +787,7 @@ namespace QDMSServer
 
             //clear and re-schedule all jobs, allowing any existing jobs to finish first.
             _scheduler.PauseAll();
-            using (var entityContext = new MyDBContext())
+            using (var entityContext = new QDMSDbContext())
             {
                 JobsManager.ScheduleJobs(_scheduler, entityContext.DataUpdateJobs.Include(t => t.Instrument).Include(t => t.Tag).ToList());
             }
@@ -808,7 +808,7 @@ namespace QDMSServer
             var setSessionMenu = (MenuItem)Resources["InstrumentSetSessionMenu"];
             setSessionMenu.Items.Clear();
 
-            using (var context = new MyDBContext())
+            using (var context = new QDMSDbContext())
             {
                 foreach (SessionTemplate t in context.SessionTemplates.ToList())
                 {
@@ -826,7 +826,7 @@ namespace QDMSServer
 
         private void SetSession_ItemClick(object sender, RoutedEventArgs e)
         {
-            using (var context = new MyDBContext())
+            using (var context = new QDMSDbContext())
             {
                 var selectedInstruments = InstrumentsGrid.SelectedItems;
                 var btn = (MenuItem)e.Source;

@@ -65,7 +65,7 @@ namespace QDMSTest
 
             _instrumentSourceMock.Verify(
                 x => x.FindInstruments(
-                    It.IsAny<MyDBContext>(),
+                    It.IsAny<QDMSDbContext>(),
                     It.Is<QDMS.Instrument>(y => 
                         y.Symbol == "SPY" &&
                         y.Datasource.Name == "Interactive Brokers" &&
@@ -80,7 +80,7 @@ namespace QDMSTest
 
             _instrumentSourceMock.Verify(
                 x => x.FindInstruments(
-                    It.IsAny<MyDBContext>(), 
+                    It.IsAny<QDMSDbContext>(), 
                     It.Is<QDMS.Instrument>(y => y == null)));
         }
 
@@ -97,8 +97,8 @@ namespace QDMSTest
 
             Expression<Func<Instrument, bool>> receivedExpr = null;
             _instrumentSourceMock.Setup(x =>
-                x.FindInstruments(It.IsAny<Expression<Func<Instrument, bool>>>(), It.IsAny<MyDBContext>()))
-            .Callback<Expression<Func<Instrument, bool>>, MyDBContext>((x, y) => receivedExpr = x);
+                x.FindInstruments(It.IsAny<Expression<Func<Instrument, bool>>>(), It.IsAny<QDMSDbContext>()))
+            .Callback<Expression<Func<Instrument, bool>>, QDMSDbContext>((x, y) => receivedExpr = x);
 
             _client.FindInstruments(exp);
             Thread.Sleep(100);

@@ -29,7 +29,7 @@ namespace QDMSServer
 
             Templates = new ObservableCollection<SessionTemplate>();
 
-            using (var context = new MyDBContext())
+            using (var context = new QDMSDbContext())
             {
                 var templates = context.SessionTemplates.Include("Sessions").ToList().OrderBy(x => x.Name);
                 foreach (SessionTemplate s in templates)
@@ -46,7 +46,7 @@ namespace QDMSServer
 
             if (window.TemplateAdded)
             {
-                using (var entityContext = new MyDBContext())
+                using (var entityContext = new QDMSDbContext())
                 {
                     Templates.Add(entityContext.SessionTemplates.Include("Sessions").First(x => x.Name == window.TheTemplate.Name));
                 }
@@ -67,7 +67,7 @@ namespace QDMSServer
             var selectedTemplate = (SessionTemplate)TemplatesGrid.SelectedItem;
             if (selectedTemplate == null) return;
 
-            using (var context = new MyDBContext())
+            using (var context = new QDMSDbContext())
             {
                 var instrumentCount = context.Instruments.Count(x => x.SessionTemplateID == selectedTemplate.ID && x.SessionsSource == SessionsSource.Template);
                 if (instrumentCount > 0)
@@ -80,7 +80,7 @@ namespace QDMSServer
             var result = MessageBox.Show(string.Format("Are you sure you want to delete {0}?", selectedTemplate.Name), "Delete", MessageBoxButton.YesNo);
             if (result == MessageBoxResult.No) return;
 
-            using (var entityContext = new MyDBContext())
+            using (var entityContext = new QDMSDbContext())
             {
                 entityContext.SessionTemplates.Attach(selectedTemplate);
                 entityContext.SessionTemplates.Remove(selectedTemplate);

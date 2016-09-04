@@ -10,14 +10,14 @@ using QDMS;
 
 namespace EntityData
 {
-    public partial class MyDBContext : DbContext
+    public partial class QDMSDbContext : DbContext
     {
-        public MyDBContext()
+        public QDMSDbContext()
             : base("Name=qdmsEntities")
         {
         }
 
-        public MyDBContext(string connectionString)
+        public QDMSDbContext(string connectionString)
         {
             Database.Connection.ConnectionString = connectionString;
         }
@@ -72,7 +72,7 @@ namespace EntityData
             modelBuilder.Entity<TemplateSession>().Property(x => x.ClosingTime).HasPrecision(0);
 
             
-            Database.SetInitializer(new MigrateDatabaseToLatestVersion<MyDBContext, MyDbContextConfiguration>());
+            Database.SetInitializer(new MigrateDatabaseToLatestVersion<QDMSDbContext, MyDbContextConfiguration>());
         }
     }
 }

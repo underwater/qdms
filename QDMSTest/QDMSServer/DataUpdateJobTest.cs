@@ -59,7 +59,7 @@ namespace QDMSTest
 
             Instrument inst = new Instrument() { ID = 1, Symbol = "SPY", Currency = "USD", Type = InstrumentType.Stock };
             _instrumentManagerMock
-                .Setup(x => x.FindInstruments(It.IsAny<Expression<Func<Instrument, bool>>>(), It.IsAny<MyDBContext>()))
+                .Setup(x => x.FindInstruments(It.IsAny<Expression<Func<Instrument, bool>>>(), It.IsAny<QDMSDbContext>()))
                 .Returns(new List<Instrument>() { inst });
 
             _localStorageMock
@@ -94,7 +94,7 @@ namespace QDMSTest
 
             Instrument inst = new Instrument() { ID = 1, Symbol = "SPY", Currency = "USD", Type = InstrumentType.Stock };
             _instrumentManagerMock
-                .Setup(x => x.FindInstruments(It.IsAny<Expression<Func<Instrument, bool>>>(), It.IsAny<MyDBContext>()))
+                .Setup(x => x.FindInstruments(It.IsAny<Expression<Func<Instrument, bool>>>(), It.IsAny<QDMSDbContext>()))
                 .Returns(new List<Instrument>() { inst });
 
             _localStorageMock
@@ -126,7 +126,7 @@ namespace QDMSTest
 
             Instrument inst = new Instrument() { ID = 1, Symbol = "SPY", Currency = "USD", Type = InstrumentType.Stock };
             _instrumentManagerMock
-                .Setup(x => x.FindInstruments(It.IsAny<Expression<Func<Instrument, bool>>>(), It.IsAny<MyDBContext>()))
+                .Setup(x => x.FindInstruments(It.IsAny<Expression<Func<Instrument, bool>>>(), It.IsAny<QDMSDbContext>()))
                 .Returns(new List<Instrument>() { inst });
 
             _localStorageMock
@@ -157,7 +157,7 @@ namespace QDMSTest
 
             Instrument inst = new Instrument() { ID = 1, Symbol = "SPY", Currency = "USD", Type = InstrumentType.Stock };
             _instrumentManagerMock
-                .Setup(x => x.FindInstruments(It.IsAny<Expression<Func<Instrument, bool>>>(), It.IsAny<MyDBContext>()))
+                .Setup(x => x.FindInstruments(It.IsAny<Expression<Func<Instrument, bool>>>(), It.IsAny<QDMSDbContext>()))
                 .Returns(new List<Instrument>() { inst });
 
             _localStorageMock
@@ -199,7 +199,7 @@ namespace QDMSTest
 
             Instrument inst = new Instrument() { ID = 1, Symbol = "SPY", Currency = "USD", Type = InstrumentType.Stock };
             _instrumentManagerMock
-                .Setup(x => x.FindInstruments(It.IsAny<Expression<Func<Instrument, bool>>>(), It.IsAny<MyDBContext>()))
+                .Setup(x => x.FindInstruments(It.IsAny<Expression<Func<Instrument, bool>>>(), It.IsAny<QDMSDbContext>()))
                 .Returns(new List<Instrument>() { inst });
 
             _localStorageMock

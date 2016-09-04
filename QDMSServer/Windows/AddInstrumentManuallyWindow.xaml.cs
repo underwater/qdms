@@ -31,7 +31,7 @@ namespace QDMSServer
 
         private readonly List<InstrumentSession> _originalSessions;
         private readonly bool _addingNew;
-        private readonly MyDBContext _context;
+        private readonly QDMSDbContext _context;
 
         /// <summary>
         ///
@@ -58,7 +58,7 @@ namespace QDMSServer
             DataContext = this;
             _addingNew = addingNew;
 
-            _context = new MyDBContext();
+            _context = new QDMSDbContext();
 
             if (instrument != null)
             {

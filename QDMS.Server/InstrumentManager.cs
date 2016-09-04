@@ -52,7 +52,7 @@ namespace QDMSServer
                 throw new Exception("Cannot add continuous futures using this method.");
             }
 
-            using (var context = new MyDBContext())
+            using (var context = new QDMSDbContext())
             {
                 //make sure data source is set and exists
                 if(instrument.Datasource == null || !context.Datasources.Any(x => x.Name == instrument.Datasource.Name))
@@ -139,7 +139,7 @@ namespace QDMSServer
             return null; //object exists and we don't update it
         }
 
-        public List<Instrument> FindInstruments(Expression<Func<Instrument, bool>> pred, MyDBContext context = null)
+        public List<Instrument> FindInstruments(Expression<Func<Instrument, bool>> pred, QDMSDbContext context = null)
         {
             var query = GetIQueryable(ref context);
 
@@ -160,7 +160,7 @@ namespace QDMSServer
         /// <param name="search">Any properties set on this instrument are used as search parameters.
         /// If null, all instruments are returned.</param>
         /// <returns>A list of instruments matching the criteria.</returns>
-        public List<Instrument> FindInstruments(MyDBContext context = null, Instrument search = null)
+        public List<Instrument> FindInstruments(QDMSDbContext context = null, Instrument search = null)
         {
             var query = GetIQueryable(ref context);
 
@@ -202,9 +202,9 @@ namespace QDMSServer
             return instrumentList;
         }
 
-        private static IQueryable<Instrument> GetIQueryable(ref MyDBContext context)
+        private static IQueryable<Instrument> GetIQueryable(ref QDMSDbContext context)
         {
-            if (context == null) context = new MyDBContext();
+            if (context == null) context = new QDMSDbContext();
 
             IQueryable<Instrument> query = context.Instruments
                 .Include(x => x.Tags)
@@ -277,7 +277,7 @@ namespace QDMSServer
                 query = query.Where(x => x.IsContinuousFuture);
         }
 
-        private static List<Instrument> FindAllInstruments(MyDBContext context, IQueryable<Instrument> query)
+        private static List<Instrument> FindAllInstruments(QDMSDbContext context, IQueryable<Instrument> query)
         {
             var allExchanges = context.Exchanges.Include(x => x.Sessions).ToList();
             var allInstruments = query.ToList();
@@ -291,7 +291,7 @@ namespace QDMSServer
         {
             if(!instrument.ID.HasValue) return;
 
-            using (var context = new MyDBContext())
+            using (var context = new QDMSDbContext())
             {
                 try
                 {
@@ -318,7 +318,7 @@ namespace QDMSServer
         /// </summary>
         public static void RemoveInstrument(Instrument instrument, IDataStorage localStorage)
         {
-            using (var entityContext = new MyDBContext())
+            using (var entityContext = new QDMSDbContext())
             {
                 //hacking around the circular reference issue
                 if (instrument.IsContinuousFuture)

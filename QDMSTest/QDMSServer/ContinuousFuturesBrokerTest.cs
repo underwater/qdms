@@ -1445,7 +1445,7 @@ namespace QDMSTest
             _instrumentMgrMock.Setup(x => x
                 .FindInstruments(It.IsAny<Expression<Func<Instrument, bool>>>(), null))
                 .Returns(
-                    (Expression<Func<Instrument, bool>> y, MyDBContext a) => contracts.AsQueryable().Where(y).ToList()
+                    (Expression<Func<Instrument, bool>> y, QDMSDbContext a) => contracts.AsQueryable().Where(y).ToList()
                 );
 
             _cfInst.ContinuousFuture.RolloverDays = 1;
@@ -1728,7 +1728,7 @@ namespace QDMSTest
             _instrumentMgrMock.Setup(x => x
                 .FindInstruments(It.IsAny<Expression<Func<Instrument, bool>>>(), null))
                 .Returns(
-                    (Expression<Func<Instrument, bool>> y, MyDBContext a) => contracts.AsQueryable().Where(y).ToList()
+                    (Expression<Func<Instrument, bool>> y, QDMSDbContext a) => contracts.AsQueryable().Where(y).ToList()
                 );
 
             _cfInst.ContinuousFuture.RolloverDays = 1;
@@ -1854,9 +1854,9 @@ namespace QDMSTest
 
             //return the contracts requested
             _instrumentMgrMock.Setup(x => x
-                .FindInstruments(It.IsAny<Expression<Func<Instrument, bool>>>(), It.IsAny<MyDBContext>()))
+                .FindInstruments(It.IsAny<Expression<Func<Instrument, bool>>>(), It.IsAny<QDMSDbContext>()))
                 .Returns(
-                    (Expression<Func<Instrument, bool>> y, MyDBContext a) => contracts.AsQueryable().Where(y).ToList()
+                    (Expression<Func<Instrument, bool>> y, QDMSDbContext a) => contracts.AsQueryable().Where(y).ToList()
                 );
 
             _cfInst.ContinuousFuture.RolloverDays = 1;

@@ -120,7 +120,7 @@ namespace QDMSServer.DataSources
             List<OHLCBar> bars;
             try
             {
-                bars = QuandlUtils.ParseXML(data);
+                bars = QuandlUtils.ParseXml(data);
             }
             catch (Exception ex)
             {

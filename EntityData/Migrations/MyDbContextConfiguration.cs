@@ -9,7 +9,7 @@ using MySql.Data.Entity;
 
 namespace EntityData.Migrations
 {
-    public class MyDbContextConfiguration : DbMigrationsConfiguration<MyDBContext>
+    public class MyDbContextConfiguration : DbMigrationsConfiguration<QDMSDbContext>
     {
         public MyDbContextConfiguration()
         {
@@ -20,7 +20,7 @@ namespace EntityData.Migrations
             //SetSqlGenerator("System.Data.SqlClient", new SqlServerMigrationSqlGenerator());
         }
          
-        protected override void Seed(MyDBContext context)
+        protected override void Seed(QDMSDbContext context)
         {
             base.Seed(context);
         }

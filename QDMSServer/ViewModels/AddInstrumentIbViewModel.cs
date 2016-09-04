@@ -64,7 +64,7 @@ namespace QDMSServer.ViewModels
             Exchanges = new ObservableCollection<string> { "All" };
             _exchanges = new Dictionary<string, Exchange>();
 
-            using (var context = new MyDBContext())
+            using (var context = new QDMSDbContext())
             {
                 _thisDS = context.Datasources.First(x => x.Name == "Interactive Brokers");
 

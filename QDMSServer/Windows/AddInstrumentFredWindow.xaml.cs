@@ -44,30 +44,16 @@ namespace QDMSServer
             DataContext = ViewModel;
 
             Observable.FromEventPattern<SelectionChangedEventArgs>(InstrumentGrid, nameof(InstrumentGrid.SelectionChanged))
-                .Subscribe(x =>
-                {
-                    ViewModel.SelectedSeries = InstrumentGrid.SelectedItems.Cast<FredUtils.FredSeries>().ToList();
-                });
+                .Subscribe(x => ViewModel.SelectedItems = x.EventArgs.AddedItems.Cast<FredUtils.FredSeries>().ToList());
+                
 
             Observable.FromEventPattern<KeyEventArgs>(SearchTextBox, nameof(SearchTextBox.KeyDown))
                 .Where(e => e.EventArgs.Key == Key.Enter)
                 .InvokeCommand(ViewModel.SearchCommand);
 
 
-            ViewModel.CloseCommand.Subscribe(x => Hide());
-
-            ViewModel.WhenAnyValue(x => x.IsBusy).Subscribe(isBusy =>
-            {
-                if (isBusy)
-                {
-                    SearchBtn.Content = new ProgressRing() { Width = 10, Height = 10 };
-                }
-                else
-                {
-                    SearchBtn.Content = "Search";
-                }
-            });
-            
+            this.WhenAnyObservable(x => x.ViewModel.CloseCommand)
+                .Subscribe(x => Hide());            
         }
 
     }
