@@ -6,8 +6,9 @@
     xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
     xmlns:system="clr-namespace:System;assembly=mscorlib"
     xmlns:qdms="clr-namespace:QDMS;assembly=QDMS"
+    xmlns:helpers="clr-namespace:QDMSServer.Helpers"
     x:Class="QDMSServer.AddInstrumentManuallyWindow"
-    Title="Add Instrument: Manual" Height="713.55" Width="418"
+    Title="Add Instrument: Manual" Height="713.55" Width="396.4"
     ResizeMode="NoResize"
     BorderBrush="Black"
     BorderThickness="1"
@@ -21,6 +22,8 @@
         <qdmsServer:ExchangeMultiValueConverter x:Key="ExchangeMultiValueConverter" />
         <qdmsServer:TimeSpanConverter x:Key="TimeSpanConverter" />
         <qdmsServer:StringToIntConverter x:Key="StringToIntConverter" />
+        <qdmsServer:EnumToBooleanConverter x:Key="EnumToBooleanConverter"/>
+        <qdmsServer:EnumerationMemberToEnumConverter x:Key="EnumerationMemberToEnumConverter"/>
 
         <ObjectDataProvider x:Key="DOTWEnum" MethodName="GetValues" ObjectType="{x:Type system:Enum}">
             <ObjectDataProvider.MethodParameters>
@@ -43,165 +46,245 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="100*"/>
-            <RowDefinition Height="26"/>
+            <RowDefinition Height="35"/>
         </Grid.RowDefinitions>
 
         <TabControl SelectedIndex="0">
             <TabItem Header="Settings">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="73*"/>
-                        <ColumnDefinition Width="106*"/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="26"/>
-                        <RowDefinition Height="26"/>
-                        <RowDefinition Height="26"/>
-                        <RowDefinition Height="26"/>
-                        <RowDefinition Height="26"/>
-                        <RowDefinition Height="26"/>
-                        <RowDefinition Height="26"/>
-                        <RowDefinition Height="26"/>
-                        <RowDefinition Height="26"/>
-                        <RowDefinition Height="26"/>
-                        <RowDefinition Height="26"/>
-                        <RowDefinition Height="26"/>
-                        <RowDefinition Height="26"/>
-                        <RowDefinition Height="26"/>
-                        <RowDefinition Height="26"/>
-                        <RowDefinition Height="26"/>
-                        <RowDefinition Height="549*"/>
+                <ScrollViewer>
+                    <StackPanel>
+                        <StackPanel>
+                            <TextBlock Visibility="Collapsed" FontSize="16" Name="ErrorMessage" Margin="10" Foreground="Red" Text="{Binding ErrorMessage}"/>
+                        </StackPanel>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="73*"/>
+                                <ColumnDefinition Width="106*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="549*"/>
 
-                        <RowDefinition Height="25"/>
-                        <RowDefinition Height="27"/>
-                    </Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
 
-                    <Label Grid.Row="0" Grid.Column="0" Content="Symbol:" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" Height="25" Width="111"/>
-                    <TextBox Grid.Row="0" Grid.Column="1"  x:Name="SymbolTextBox" HorizontalAlignment="Left" Height="20" Margin="10,0,0,0" TextWrapping="NoWrap" Text="{Binding TheInstrument.Symbol}" VerticalAlignment="Top" Width="166"/>
+                            <TextBlock Grid.Row="0" Margin="5 2" Grid.Column="0" Text="Symbol:" VerticalAlignment="Center" />
+                            <TextBox Grid.Row="0" Grid.Column="1" Margin="5 2"
+                             TextWrapping="NoWrap" 
+                             Text="{Binding Instrument.Symbol}" />
 
-                    <Label Grid.Row="1" Grid.Column="0" Content="Underlying Symbol:" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" Height="25" Width="125"/>
-                    <TextBox Grid.Row="1" Grid.Column="1"  x:Name="UnderlyingSymbolTextBox" HorizontalAlignment="Left" Height="25" Margin="10,0,0,0" TextWrapping="NoWrap" Text="{Binding TheInstrument.UnderlyingSymbol}" VerticalAlignment="Top" Width="166" Grid.RowSpan="2"/>
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Underlying Symbol:" VerticalAlignment="Center" Margin="5 2"/>
+                            <TextBox Grid.Row="1" Grid.Column="1" Margin="5 2" Text="{Binding Instrument.UnderlyingSymbol}"/>
 
-                    <Label Grid.Row="2" Grid.Column="0" Content="Data Source Symbol:" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" Height="25" Width="125" Grid.RowSpan="2"/>
-                    <TextBox Grid.Row="2" Grid.Column="1"  x:Name="DatasourceSymbolTextBox" HorizontalAlignment="Left" Height="20" Margin="10,0,0,0" TextWrapping="NoWrap" Text="{Binding TheInstrument.DatasourceSymbol}" VerticalAlignment="Top" Width="166" Grid.RowSpan="2"/>
-
-
-                    <Label Grid.Row="3" Grid.Column="0" Content="Name:" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" Height="25" Width="95"/>
-                    <TextBox Grid.Row="3" Grid.Column="1"  x:Name="NameTextBox" HorizontalAlignment="Left" Height="20" Margin="10,0,0,0" TextWrapping="NoWrap" Text="{Binding TheInstrument.Name}" VerticalAlignment="Top" Width="166"/>
-
-                    <Label Grid.Row="4" Grid.Column="0" Content="Exchange:" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" Height="25" Width="95"/>
-                    <ComboBox SelectionChanged="ExchangeComboBox_OnSelectedIndexChanged"  IsEnabled="{Binding IsChecked, Converter={StaticResource InvertBooleanConverter}, ElementName=ExchangeNullCheckBox}" Grid.Row="4" Grid.Column="1"  x:Name="ExchangeComboBox" IsTextSearchEnabled="True" HorizontalAlignment="Left" Height="20" Margin="10,0,0,0" ItemsSource="{Binding Exchanges}" DisplayMemberPath="Name" VerticalAlignment="Top" Width="120" >
-                        <ComboBox.SelectedItem>
-                            <MultiBinding Converter="{StaticResource ExchangeMultiValueConverter}">
-                                <Binding Path="TheInstrument.Exchange" Mode="TwoWay" />
-                                <Binding Path="TheInstrument.ExchangeID" Mode="OneWayToSource" />
-                            </MultiBinding>
-                        </ComboBox.SelectedItem>
-                    </ComboBox>
-                    <!--IsEnabled="{Binding ElementName=ExchangeRadioBtn,Path=IsChecked,Converter={StaticResource InvertBooleanConverter}}" -->
-                    <CheckBox x:Name="ExchangeNullCheckBox" 
-                              IsChecked="{Binding TheInstrument.ExchangeID, Converter={StaticResource IsNullConverter}, Mode=OneWay}" 
-                              Content="Null" Grid.Column="1" HorizontalAlignment="Left" Margin="136,6,0,0" Grid.Row="4" VerticalAlignment="Top"/>
-
-                    <Label Grid.Row="5" Grid.Column="0" Content="Primary Exchange:" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" Height="25" Width="125"/>
-                    <ComboBox IsEnabled="{Binding IsChecked, Converter={StaticResource InvertBooleanConverter}, ElementName=PrimaryExchangeNullCheckBox}" Grid.Row="5" Grid.Column="1"  x:Name="PrimaryExchangeComboBox" IsTextSearchEnabled="True" HorizontalAlignment="Left" Height="20" Margin="10,0,0,0"  ItemsSource="{Binding Exchanges}" DisplayMemberPath="Name" VerticalAlignment="Top" Width="120">
-                        <ComboBox.SelectedItem>
-                            <MultiBinding Converter="{StaticResource ExchangeMultiValueConverter}">
-                                <Binding Path="TheInstrument.PrimaryExchange" Mode="TwoWay" />
-                                <Binding Path="TheInstrument.PrimaryExchangeID" Mode="OneWayToSource" />
-                            </MultiBinding>
-                        </ComboBox.SelectedItem>
-                    </ComboBox>
-                    <CheckBox x:Name="PrimaryExchangeNullCheckBox" IsChecked="{Binding TheInstrument.PrimaryExchangeID, Converter={StaticResource IsNullConverter}, Mode=OneWay}" Content="Null" Grid.Column="1" HorizontalAlignment="Left" Margin="136,6,0,0" Grid.Row="5" VerticalAlignment="Top"/>
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Data Source Symbol:" VerticalAlignment="Center" Margin="5 2"/>
+                            <TextBox Grid.Row="2" Grid.Column="1"  Text="{Binding Instrument.DatasourceSymbol}" Margin="5 2"/>
 
 
-                    <Label Grid.Row="6" Grid.Column="0" Content="Type:" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" Height="25" Width="95"/>
-                    <ComboBox Grid.Row="6" Grid.Column="1"  x:Name="TypeComboBox" IsTextSearchEnabled="True" HorizontalAlignment="Left" Height="20" Margin="10,0,0,0"  Text="{Binding TheInstrument.Type}" VerticalAlignment="Top" Width="120" />
+                            <TextBlock Grid.Row="3" Grid.Column="0" Text="Name:" VerticalAlignment="Center" Margin="5 2"/>
+                            <TextBox Grid.Row="3" Grid.Column="1" TextWrapping="NoWrap" Text="{Binding Instrument.Name}" Margin="5 2" />
 
-                    <Label Grid.Row="7" Grid.Column="0" Content="Option Type:" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" Height="25" Width="95"/>
-                    <ComboBox Grid.Row="7" Grid.Column="1" IsEnabled="{Binding IsChecked, Converter={StaticResource InvertBooleanConverter}, ElementName=OptionTypeNullCheckBox}"  x:Name="OptionTypeComboBox" IsTextSearchEnabled="True" HorizontalAlignment="Left" Height="20" Margin="10,0,0,0" SelectedItem="{Binding TheInstrument.OptionType}" VerticalAlignment="Top" Width="120" />
-                    <CheckBox Click="OptionTypeNullCheckBox_Click" x:Name="OptionTypeNullCheckBox" IsChecked="{Binding TheInstrument.OptionType, Converter={StaticResource IsNullConverter}, Mode=OneWay}" Content="Null" Grid.Column="1" HorizontalAlignment="Left" Margin="136,6,0,0" Grid.Row="7" VerticalAlignment="Top"/>
+                            <TextBlock Grid.Row="4" Grid.Column="0" Text="Exchange:" VerticalAlignment="Center" Margin="5 2"/>
+                            <StackPanel Orientation="Horizontal" Grid.Row="4" Grid.Column="1">
+                                <ComboBox MinWidth="150" Margin="5 2"
+                                  SelectionChanged="ExchangeComboBox_OnSelectedIndexChanged" 
+                                  IsEnabled="{Binding IsChecked, Converter={StaticResource InvertBooleanConverter}, ElementName=ExchangeNullCheckBox}"   
+                                  x:Name="ExchangeComboBox" IsTextSearchEnabled="True" 
+                                  ItemsSource="{Binding Exchanges}" DisplayMemberPath="Name" >
+                                    <ComboBox.SelectedItem>
+                                        <MultiBinding Converter="{StaticResource ExchangeMultiValueConverter}">
+                                            <Binding Path="Instrument.Exchange" Mode="TwoWay" />
+                                            <Binding Path="Instrument.ExchangeID" Mode="OneWayToSource" />
+                                        </MultiBinding>
+                                    </ComboBox.SelectedItem>
+                                </ComboBox>
+                                <!--IsEnabled="{Binding ElementName=ExchangeRadioBtn,Path=IsChecked,Converter={StaticResource InvertBooleanConverter}}" -->
+                                <CheckBox x:Name="ExchangeNullCheckBox" 
+                              IsChecked="{Binding Instrument.ExchangeID, Converter={StaticResource IsNullConverter}, Mode=OneWay}" 
+                              Content="Null" />
+
+                            </StackPanel>
+
+                            <TextBlock Grid.Row="5" Grid.Column="0" Text="Primary Exchange:" VerticalAlignment="Center" Margin="5 2"/>
+
+                            <StackPanel Grid.Row="5" Grid.Column="1" Orientation="Horizontal">
+                                <ComboBox MinWidth="150" Margin="5 2" IsEnabled="{Binding IsChecked, Converter={StaticResource InvertBooleanConverter}, ElementName=PrimaryExchangeNullCheckBox}" 
+                                  x:Name="PrimaryExchangeComboBox" 
+                                  IsTextSearchEnabled="True" 
+                                  ItemsSource="{Binding Exchanges}" DisplayMemberPath="Name">
+                                    <ComboBox.SelectedItem>
+                                        <MultiBinding Converter="{StaticResource ExchangeMultiValueConverter}">
+                                            <Binding Path="Instrument.PrimaryExchange" Mode="TwoWay" />
+                                            <Binding Path="Instrument.PrimaryExchangeID" Mode="OneWayToSource" />
+                                        </MultiBinding>
+                                    </ComboBox.SelectedItem>
+                                </ComboBox>
+                                <CheckBox x:Name="PrimaryExchangeNullCheckBox" 
+                                  IsChecked="{Binding Instrument.PrimaryExchangeID, Converter={StaticResource IsNullConverter}, Mode=OneWay}" 
+                                  Content="Null" />
+                            </StackPanel>
 
 
-                    <Label Grid.Row="8" Grid.Column="0" Content="Multiplier:" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" Height="25" Width="95"/>
-                    <TextBox Grid.Row="8" Grid.Column="1"  x:Name="MultiplierTextBox" HorizontalAlignment="Left" Height="20" Margin="10,0,0,0" TextWrapping="Wrap" Text="{Binding TheInstrument.Multiplier, Converter={StaticResource StringToNullableConverter}}" VerticalAlignment="Top" Width="120"/>
+                            <TextBlock Grid.Row="6" Grid.Column="0" Text="Type:" VerticalAlignment="Center" Margin="5 2"/>
+                            <ComboBox Grid.Row="6" Grid.Column="1"  x:Name="TypeComboBox" 
+                              ItemsSource="{Binding Source={helpers:Enumeration {x:Type qdms:InstrumentType}}}"
+                              SelectedItem="{Binding Instrument.Type, Converter={StaticResource EnumerationMemberToEnumConverter}}"
+                              DisplayMemberPath="Value" 
+                              IsTextSearchEnabled="True" Margin="5 2"/>
 
-                    <Label Grid.Row="9" Grid.Column="0" Content="Expiration:" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" Height="25" Width="95"/>
-                    <DatePicker Grid.Row="9" Grid.Column="1" HorizontalAlignment="Left" Height="20" Margin="10,0,0,0" SelectedDate="{Binding TheInstrument.Expiration, Converter={StaticResource StringToNullableConverter},StringFormat=\'dd/MM/yyyy\'}" VerticalAlignment="Top" Width="120" />
 
-                    <Label Grid.Row="10" Grid.Column="0" Content="Strike:" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" Height="25" Width="95"/>
-                    <TextBox Grid.Row="10" Grid.Column="1"  x:Name="StrikeTextBox" HorizontalAlignment="Left" Height="20" Margin="10,0,0,0" TextWrapping="Wrap" Text="{Binding TheInstrument.Strike, Converter={StaticResource StringToNullableConverter}}" VerticalAlignment="Top" Width="120"/>
+                            <TextBlock Grid.Row="7" Grid.Column="0" Text="Option Type:" VerticalAlignment="Center" Margin="5 2"/>
+                            <StackPanel Orientation="Horizontal" Grid.Row="7" Grid.Column="1" >
+                                <ComboBox MinWidth="150"
+                                  ItemsSource="{Binding Source={helpers:Enumeration {x:Type qdms:OptionType}}}"
+                                  DisplayMemberPath="Description"
+                                  SelectedValuePath="Value" 
+                                  IsEnabled="{Binding IsChecked, Converter={StaticResource InvertBooleanConverter}, ElementName=OptionTypeNullCheckBox}" 
+                                  x:Name="OptionTypeComboBox" 
+                                  IsTextSearchEnabled="True" 
+                                  SelectedItem="{Binding Instrument.OptionType, Converter={StaticResource EnumerationMemberToEnumConverter}}" Margin="5 2"/>
+                                <CheckBox Click="OptionTypeNullCheckBox_Click"
+                                  x:Name="OptionTypeNullCheckBox" 
+                                  IsChecked="{Binding Instrument.OptionType, Converter={StaticResource IsNullConverter}, Mode=OneWay}" 
+                                  Content="Null" />
 
-                    <Label Grid.Row="11" Grid.Column="0" Content="Currency:" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" Height="25" Width="95"/>
-                    <TextBox Grid.Row="11" Grid.Column="1"  x:Name="CurrencyTextBox" HorizontalAlignment="Left" Height="20" Margin="10,0,0,0" TextWrapping="Wrap" Text="{Binding TheInstrument.Currency}" VerticalAlignment="Top" Width="120"/>
+                            </StackPanel>
 
-                    <Label Grid.Row="12" Grid.Column="0" Content="Min Tick:" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" Height="25" Width="95"/>
-                    <TextBox Grid.Row="12" Grid.Column="1"  x:Name="MinTickTextBox" HorizontalAlignment="Left" Height="20" Margin="10,0,0,0" TextWrapping="Wrap" Text="{Binding TheInstrument.MinTick, Converter={StaticResource StringToNullableConverter}}" VerticalAlignment="Top" Width="120"/>
+                            <TextBlock Grid.Row="8" Grid.Column="0" Text="Multiplier:" VerticalAlignment="Center" Margin="5 2"/>
+                            <TextBox Grid.Row="8" Margin="5 2" 
+                             Grid.Column="1" 
+                             x:Name="MultiplierTextBox" 
+                             TextWrapping="Wrap" Text="{Binding Instrument.Multiplier, Converter={StaticResource StringToNullableConverter}}" />
 
-                    <Label Grid.Row="13" Grid.Column="0" Content="Industry:" HorizontalAlignment="Left" Margin="10,0,0,0" Height="25" VerticalAlignment="Top" Width="95"/>
-                    <TextBox Grid.Row="13" Grid.Column="1"  x:Name="IndustryTextBox" HorizontalAlignment="Left" Height="20" Margin="10,0,0,0" TextWrapping="NoWrap" Text="{Binding TheInstrument.Industry}" VerticalAlignment="Top" Width="166"/>
+                            <TextBlock Grid.Row="9" Grid.Column="0" Text="Expiration:" Margin="5 2"/>
+                            <DatePicker Grid.Row="9" Grid.Column="1" Margin="5 2" SelectedDate="{Binding Instrument.Expiration, Converter={StaticResource StringToNullableConverter},StringFormat=\'dd/MM/yyyy\'}" />
 
-                    <Label Grid.Row="14" Grid.Column="0" Content="Category:" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" Height="25" Width="95"/>
-                    <TextBox Grid.Row="14" Grid.Column="1"  x:Name="CategoryTextBox" HorizontalAlignment="Left" Height="20" Margin="10,0,0,0" TextWrapping="NoWrap" Text="{Binding TheInstrument.Category}" VerticalAlignment="Top" Width="166"/>
+                            <TextBlock Grid.Row="10" Grid.Column="0" Text="Strike:" VerticalAlignment="Center" Margin="5 2"/>
+                            <TextBox Grid.Row="10" Grid.Column="1"  
+                             TextWrapping="Wrap" 
+                             Text="{Binding Instrument.Strike, Converter={StaticResource StringToNullableConverter}}" Margin="5 2"/>
 
-                    <Label Grid.Row="15" Grid.Column="0" Content="Subcategory:" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" Height="25" Width="95"/>
-                    <TextBox Grid.Row="15" Grid.Column="1"  x:Name="SubcategoryTextBox" HorizontalAlignment="Left" Height="20" Margin="10,0,0,0" TextWrapping="NoWrap" Text="{Binding TheInstrument.Subcategory}" VerticalAlignment="Top" Width="166"/>
+                            <TextBlock Grid.Row="11" Grid.Column="0" Text="Currency:" VerticalAlignment="Center" Margin="5 2"/>
+                            <TextBox Grid.Row="11" Grid.Column="1" 
+                             TextWrapping="Wrap" Text="{Binding Instrument.Currency}" Margin="5 2"/>
 
-                    <Label Grid.Row="16" Grid.Column="0" Content="Tags:" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" Height="25" Width="95"/>
-                    <ScrollViewer  Grid.Row="16" Grid.Column="1" VerticalScrollBarVisibility="Auto" Margin="10,5,0,10" Width="166" HorizontalAlignment="Left">
-                        <ItemsControl  x:Name="TagsListBox" FontSize="10" ItemsSource="{Binding Tags}">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <CheckBox Content="{Binding Path=Item.Name}" IsChecked="{Binding Path=IsChecked}" Margin="5 5 0 0"/>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </ScrollViewer>
-                    <Label Grid.Row="17" Grid.Column="0" Content="Datasource:" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" Height="25" Width="95"/>
-                    <ComboBox Grid.Row="17" Grid.Column="1" DisplayMemberPath="Name" x:Name="DatasourceComboBox" IsTextSearchEnabled="True" HorizontalAlignment="Left" Height="20" Margin="10,0,0,0"
-						VerticalAlignment="Top" Width="166">
-                        <ComboBox.SelectedItem>
-                            <MultiBinding Converter="{StaticResource DatasourceMultiValueConverter}">
-                                <Binding Path="TheInstrument.Datasource" Mode="TwoWay" />
-                                <Binding Path="TheInstrument.DatasourceID" Mode="OneWayToSource" />
-                            </MultiBinding>
-                        </ComboBox.SelectedItem>
-                    </ComboBox>
+                            <TextBlock Grid.Row="12" Grid.Column="0" Text="Min Tick:" VerticalAlignment="Center" Margin="5 2"/>
+                            <TextBox Grid.Row="12" Grid.Column="1" 
+                             TextWrapping="Wrap" 
+                             Text="{Binding Instrument.MinTick, Converter={StaticResource StringToNullableConverter}}" Margin="5 2"/>
 
-                    <Label Grid.Row="18" Grid.Column="0" Content="Valid Exchanges:" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" Height="25" Width="95"/>
-                    <TextBox Grid.Row="18" Grid.Column="1"  x:Name="ValidExchangesTextBox" HorizontalAlignment="Left" Height="20" Margin="10,0,0,0" TextWrapping="NoWrap" Text="{Binding TheInstrument.ValidExchanges}" VerticalAlignment="Top" Width="166"/>
+                            <TextBlock Grid.Row="13" Grid.Column="0" Text="Industry:" VerticalAlignment="Center" Margin="5 2"/>
+                            <TextBox Grid.Row="13" Grid.Column="1" 
+                             TextWrapping="NoWrap" Text="{Binding Instrument.Industry}" Margin="5 2"/>
 
-                </Grid>
+                            <TextBlock Grid.Row="14" Grid.Column="0" Text="Category:" VerticalAlignment="Center" Margin="5 2"/>
+                            <TextBox Grid.Row="14" Grid.Column="1" 
+                             TextWrapping="NoWrap" Text="{Binding Instrument.Category}" Margin="5 2"/>
+
+                            <TextBlock Grid.Row="15" Grid.Column="0" Text="Subcategory:" VerticalAlignment="Center" Margin="5 2"/>
+                            <TextBox Grid.Row="15" Grid.Column="1" 
+                             TextWrapping="NoWrap" Text="{Binding Instrument.Subcategory}" Margin="5 2"/>
+
+                            <TextBlock Grid.Row="16" Grid.Column="0" Text="Tags:" Margin="5 2"/>
+                            <ScrollViewer  Grid.Row="16" Grid.Column="1" VerticalScrollBarVisibility="Auto" Margin="5 2">
+                                <ItemsControl  x:Name="TagsListBox" FontSize="10" ItemsSource="{Binding Tags}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <CheckBox Content="{Binding Path=Item.Name}" IsChecked="{Binding Path=IsChecked}" Margin="5 5 0 0"/>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+                            <TextBlock Grid.Row="17" Grid.Column="0" Text="Datasource:" VerticalAlignment="Center" Margin="5 2"/>
+                            <ComboBox Grid.Row="17" Grid.Column="1" 
+                              DisplayMemberPath="Name"
+                              x:Name="DatasourceComboBox" 
+                              IsTextSearchEnabled="True" Margin="5 2"
+                              ItemsSource="{Binding Datasources}">
+                                <ComboBox.SelectedItem>
+                                    <MultiBinding Converter="{StaticResource DatasourceMultiValueConverter}">
+                                        <Binding Path="Instrument.Datasource" Mode="TwoWay" />
+                                        <Binding Path="Instrument.DatasourceID" Mode="OneWayToSource" />
+                                    </MultiBinding>
+                                </ComboBox.SelectedItem>
+                            </ComboBox>
+
+                            <TextBlock Grid.Row="18" Grid.Column="0" Text="Valid Exchanges:" VerticalAlignment="Center" Margin="5 2"/>
+                            <TextBox Grid.Row="18" Grid.Column="1"  TextWrapping="NoWrap" Text="{Binding Instrument.ValidExchanges}" Margin="5 2"/>
+
+                        </Grid>
+                    </StackPanel>
+                </ScrollViewer>
             </TabItem>
 
 
             <TabItem Header="Sessions">
                 <Grid Background="Transparent">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="140"/>
-                        <RowDefinition Height="206*"/>
-                        <RowDefinition Height="25"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                    <GroupBox Header="Session Source" HorizontalAlignment="Stretch" Margin="10,10,10,0" VerticalAlignment="Top" Height="120" >
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="28"/>
-                                <RowDefinition Height="28"/>
-                                <RowDefinition Height="28"/>
-                            </Grid.RowDefinitions>
-                            <RadioButton Checked="ExchangeRadioBtn_Checked" Grid.Row="0" x:Name="ExchangeRadioBtn" Margin="0,5" Content="Exchange"
-                                         IsEnabled="{Binding ElementName=ExchangeNullCheckBox,Path=IsChecked,Converter={StaticResource InvertBooleanConverter}}"  />
-                            <RadioButton Checked="CustomRadioBtn_Checked" Grid.Row="1" x:Name="CustomRadioBtn" Margin="0,5" Content="Custom"/>
-                            <RadioButton Checked="TemplateRadioBtn_Checked" Grid.Row="2" x:Name="TemplateRadioBtn" Margin="0,5" Content="Template:" />
-                            <ComboBox DisplayMemberPath="Name" SelectionChanged="TemplateComboBox_SelectedIndexChanged" Grid.Row="1" Height="20" 
-                                      x:Name="TemplateComboBox" IsEnabled="{Binding IsChecked, ElementName=TemplateRadioBtn}" Margin="0,25,10,5" 
-                                      Width="250" HorizontalAlignment="Right" Grid.RowSpan="2" />
-                        </Grid>
+                    <GroupBox Header="Session Source" HorizontalAlignment="Stretch" Margin="10,10,10,0" VerticalAlignment="Top" >
+                        <StackPanel>
+                            <RadioButton Content="Exchange" Margin="5"
+                                         IsChecked="{Binding Instrument.SessionsSource, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Exchange}"
+                                         IsEnabled="{Binding ElementName=ExchangeNullCheckBox,Path=IsChecked,Converter={StaticResource InvertBooleanConverter}}">
+                            </RadioButton>
+                            <RadioButton  Margin="5" Content="Custom" IsChecked="{Binding Instrument.SessionsSource, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Custom}"/>
 
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <RadioButton Content="Template:" Margin="5" Name="TemplateRadioBtn" IsChecked="{Binding Instrument.SessionsSource, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Template}" />
+                                <ComboBox Margin="5"
+                                          ItemsSource="{Binding Templates}"
+                                          SelectedItem="{Binding SelectedTemplate}"
+                                          DisplayMemberPath="Name" 
+                                          Grid.Column="1"
+                                          x:Name="TemplateComboBox" 
+                                          IsEnabled="{Binding IsChecked, ElementName=TemplateRadioBtn}" />
+                            </Grid>
+                        </StackPanel>
                     </GroupBox>
-                    <DataGrid  Name="SessionsGrid" IsEnabled="{Binding ElementName=CustomRadioBtn,Path=IsChecked}" 
+
+                    <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="10 0">
+                        <Button Width="40" Height="40" IsEnabled="{Binding ElementName=CustomRadioBtn,Path=IsChecked}" Style="{StaticResource MetroCircleButtonStyle}"  
+                                Click="AddSessionItemBtn_Click" 
+                                Name="AddSessionItemBtn" 
+                                Content="+" 
+                                FontSize="17"/>
+
+                        <Button IsEnabled="{Binding ElementName=CustomRadioBtn,Path=IsChecked}" Style="{StaticResource MetroCircleButtonStyle}"
+                                Click="DeleteSessionItemBtn_Click" 
+                                Width="40" Height="40"
+                                FontSize="17"
+                                Foreground="Red"
+                                Name="DeleteSessionItemBtn" 
+                                Content="x" />
+
+                    </StackPanel>
+
+                    <DataGrid  Name="SessionsGrid" IsEnabled="{Binding ElementName=CustomRadioBtn,Path=IsChecked}" Margin="10" 
                                ItemsSource="{Binding SelectedSessions}" AutoGenerateColumns="False"  HorizontalAlignment="Stretch" 
-                               Margin="10,12,10,30" VerticalAlignment="Stretch" Grid.Row="1" Grid.RowSpan="2" CanUserAddRows="False">
+                                VerticalAlignment="Stretch" Grid.Row="2" CanUserAddRows="False">
 
                         <DataGrid.Columns>
                             <DataGridComboBoxColumn SelectedItemBinding="{Binding Path=OpeningDay}" SortDirection="Ascending" Header="Open" Width="65" ItemsSource="{Binding Source={StaticResource DOTWEnum}}" />
@@ -250,10 +333,10 @@
                             </DataGridTemplateColumn>
                         </DataGrid.Columns>
                     </DataGrid>
-                    <Button IsEnabled="{Binding ElementName=CustomRadioBtn,Path=IsChecked}"  Click="AddSessionItemBtn_Click"  Name="AddSessionItemBtn" Content="Add" HorizontalAlignment="Left" Margin="8,445,0,0" VerticalAlignment="Top" Width="75" Grid.Row="1" Grid.RowSpan="2"/>
-                    <Button IsEnabled="{Binding ElementName=CustomRadioBtn,Path=IsChecked}" Click="DeleteSessionItemBtn_Click"  Name="DeleteSessionItemBtn" Content="Delete" HorizontalAlignment="Left" Margin="88,445,0,0" VerticalAlignment="Top" Width="75" Grid.Row="1" Grid.RowSpan="2"/>
+
                 </Grid>
             </TabItem>
+
             <TabItem Name="ContFutTabItem" Header="Cont. Fut." HorizontalAlignment="Left" VerticalAlignment="Top">
                 <Grid Background="Transparent">
                     <Grid.RowDefinitions>
@@ -262,69 +345,90 @@
                         <RowDefinition Height="125"/>
                         <RowDefinition Height="87*"/>
                     </Grid.RowDefinitions>
-  
-                    <Label Grid.Row="0"  Content="Root Symbol:" HorizontalAlignment="Left" Margin="5,10,0,0" VerticalAlignment="Top" Height="23" Width="109"/>
-                    <ComboBox Grid.Row="0"  Name="RootSymbolComboBox" HorizontalAlignment="Left" Margin="120,10,0,0" 
-                              SelectedItem="{Binding TheInstrument.ContinuousFuture.UnderlyingSymbol}"
+
+                    <Label Grid.Row="0"  Content="Root Symbol:" HorizontalAlignment="Left" Margin="5,10,0,0"  Width="109"/>
+                    <ComboBox Grid.Row="0"  Name="RootSymbolComboBox" 
+                              ItemsSource="{Binding UnderlyingSymbols}"
+                              HorizontalAlignment="Left" Margin="120,10,0,0" 
+                              SelectedItem="{Binding Instrument.ContinuousFuture.UnderlyingSymbol}"
                               DisplayMemberPath="Symbol" VerticalAlignment="Top" Width="120" Height="26"/>
 
 
                     <GroupBox Grid.Row="1" Header="Months" Margin="5,0,5,0" VerticalAlignment="Top" Height="85" HorizontalAlignment="Stretch">
                         <Grid>
-                            <CheckBox IsChecked="{Binding TheInstrument.ContinuousFuture.UseJan}" x:Name="MonthsJan" Content="Jan (F)" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" />
-                            <CheckBox IsChecked="{Binding TheInstrument.ContinuousFuture.UseFeb}" x:Name="MonthsFeb" Content="Feb (G)" HorizontalAlignment="Left" Margin="60,0,0,0" VerticalAlignment="Top" />
-                            <CheckBox IsChecked="{Binding TheInstrument.ContinuousFuture.UseMar}" x:Name="MonthsMar" Content="Mar (H)" HorizontalAlignment="Left" Margin="125,0,0,0" VerticalAlignment="Top"/>
-                            <CheckBox IsChecked="{Binding TheInstrument.ContinuousFuture.UseApr}" x:Name="MonthsApr" Content="Apr (J)" HorizontalAlignment="Left" Margin="190,0,0,0" VerticalAlignment="Top"/>
-                            <CheckBox IsChecked="{Binding TheInstrument.ContinuousFuture.UseMay}" x:Name="MonthsMay" Content="May (K)" HorizontalAlignment="Left" Margin="251,0,0,0" VerticalAlignment="Top"/>
-                            <CheckBox IsChecked="{Binding TheInstrument.ContinuousFuture.UseJun}" x:Name="MonthsJun" Content="Jun (M)" HorizontalAlignment="Left" Margin="316,0,0,0" VerticalAlignment="Top"/>
-                            <CheckBox IsChecked="{Binding TheInstrument.ContinuousFuture.UseJul}" x:Name="MonthsJul" Content="Jul (N)" HorizontalAlignment="Left" Margin="0,22,0,0" VerticalAlignment="Top"/>
-                            <CheckBox IsChecked="{Binding TheInstrument.ContinuousFuture.UseAug}" x:Name="MonthsAug" Content="Aug (Q)" HorizontalAlignment="Left" Margin="60,22,0,0" VerticalAlignment="Top"/>
-                            <CheckBox IsChecked="{Binding TheInstrument.ContinuousFuture.UseSep}" x:Name="MonthsSep" Content="Sep (U)" HorizontalAlignment="Left" Margin="125,22,0,0" VerticalAlignment="Top" />
-                            <CheckBox IsChecked="{Binding TheInstrument.ContinuousFuture.UseOct}" x:Name="MonthsOct" Content="Oct (V)" HorizontalAlignment="Left" Margin="190,22,0,0" VerticalAlignment="Top" />
-                            <CheckBox IsChecked="{Binding TheInstrument.ContinuousFuture.UseNov}" x:Name="MonthsNov" Content="Nov (X)" HorizontalAlignment="Left" Margin="251,22,0,0" VerticalAlignment="Top" />
-                            <CheckBox IsChecked="{Binding TheInstrument.ContinuousFuture.UseDec}" x:Name="MonthsDec" Content="Dec (Z)" HorizontalAlignment="Left" Margin="316,22,0,0" VerticalAlignment="Top" />
+                            <CheckBox IsChecked="{Binding Instrument.ContinuousFuture.UseJan}" x:Name="MonthsJan" Content="Jan (F)" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" />
+                            <CheckBox IsChecked="{Binding Instrument.ContinuousFuture.UseFeb}" x:Name="MonthsFeb" Content="Feb (G)" HorizontalAlignment="Left" Margin="60,0,0,0" VerticalAlignment="Top" />
+                            <CheckBox IsChecked="{Binding Instrument.ContinuousFuture.UseMar}" x:Name="MonthsMar" Content="Mar (H)" HorizontalAlignment="Left" Margin="125,0,0,0" VerticalAlignment="Top"/>
+                            <CheckBox IsChecked="{Binding Instrument.ContinuousFuture.UseApr}" x:Name="MonthsApr" Content="Apr (J)" HorizontalAlignment="Left" Margin="190,0,0,0" VerticalAlignment="Top"/>
+                            <CheckBox IsChecked="{Binding Instrument.ContinuousFuture.UseMay}" x:Name="MonthsMay" Content="May (K)" HorizontalAlignment="Left" Margin="251,0,0,0" VerticalAlignment="Top"/>
+                            <CheckBox IsChecked="{Binding Instrument.ContinuousFuture.UseJun}" x:Name="MonthsJun" Content="Jun (M)" HorizontalAlignment="Left" Margin="316,0,0,0" VerticalAlignment="Top"/>
+                            <CheckBox IsChecked="{Binding Instrument.ContinuousFuture.UseJul}" x:Name="MonthsJul" Content="Jul (N)" HorizontalAlignment="Left" Margin="0,22,0,0" VerticalAlignment="Top"/>
+                            <CheckBox IsChecked="{Binding Instrument.ContinuousFuture.UseAug}" x:Name="MonthsAug" Content="Aug (Q)" HorizontalAlignment="Left" Margin="60,22,0,0" VerticalAlignment="Top"/>
+                            <CheckBox IsChecked="{Binding Instrument.ContinuousFuture.UseSep}" x:Name="MonthsSep" Content="Sep (U)" HorizontalAlignment="Left" Margin="125,22,0,0" VerticalAlignment="Top" />
+                            <CheckBox IsChecked="{Binding Instrument.ContinuousFuture.UseOct}" x:Name="MonthsOct" Content="Oct (V)" HorizontalAlignment="Left" Margin="190,22,0,0" VerticalAlignment="Top" />
+                            <CheckBox IsChecked="{Binding Instrument.ContinuousFuture.UseNov}" x:Name="MonthsNov" Content="Nov (X)" HorizontalAlignment="Left" Margin="251,22,0,0" VerticalAlignment="Top" />
+                            <CheckBox IsChecked="{Binding Instrument.ContinuousFuture.UseDec}" x:Name="MonthsDec" Content="Dec (Z)" HorizontalAlignment="Left" Margin="316,22,0,0" VerticalAlignment="Top" />
                         </Grid>
                     </GroupBox>
 
 
-
-
-
-
-
-
-
-                    <GroupBox Header="Rollover" Margin="5,10,5,0" Grid.Row="2" VerticalAlignment="Top" HorizontalAlignment="Stretch" Height="100">
+                    <GroupBox Header="Rollover" Margin="5,10,5,0" Grid.Row="2" VerticalAlignment="Top" HorizontalAlignment="Stretch" >
                         <Grid>
-                            <StackPanel Margin="0,5,0,0">
-                                <RadioButton Name="RolloverRule" 
-                                             Checked="RolloverRule_Checked"
-                                             Content="Rule-Based" HorizontalAlignment="Left" Height="20" VerticalAlignment="Top" Width="100"/>
-                                <RadioButton x:Name="RolloverTime" 
-                                             Checked="RolloverTime_Checked"
-                                             Content="Time-Based" HorizontalAlignment="Left" Margin="0,10,0,0" Height="20" VerticalAlignment="Top" Width="100"/>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                <ColumnDefinition></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <RadioButton Name="RolloverRule" Margin="5,10"
+                                             Content="Rule-Based" HorizontalAlignment="Left" />
+                                <RadioButton x:Name="RolloverTime" Margin="5"
+                                             IsChecked="{Binding Instrument.ContinuousFuture.RolloverType, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Time}"
+                                             Content="Time-Based" HorizontalAlignment="Left" />
                             </StackPanel>
-                            <TextBox Grid.Row="0" x:Name="RolloverTimeDays" HorizontalAlignment="Left" Height="16" Margin="94,20,0,0" 
-                                Text="{Binding TheInstrument.ContinuousFuture.RolloverDays,Converter={StaticResource StringToIntConverter}}" TextWrapping="Wrap" VerticalAlignment="Top" Width="21"/>
+                            <StackPanel Grid.Column="1">
 
-                            <Label Content="Trading days prior to expiration" HorizontalAlignment="Left" Margin="120,37,0,0" VerticalAlignment="Top" Width="204"/>
-                            <Label Content="Days of higher" HorizontalAlignment="Left" Margin="120,10,0,0" VerticalAlignment="Top"/>
-                            <ComboBox Name="RolloverRuleType" HorizontalAlignment="Left" Margin="206,7,0,0" VerticalAlignment="Top" Width="150" SelectedIndex="0"
-                                      SelectedItem="{Binding TheInstrument.ContinuousFuture.RolloverType}"
-                                      
-                                      IsEnabled="{Binding IsChecked, ElementName=RolloverRule}">
-                            </ComboBox>
+                                <Grid Margin="5" IsEnabled="{Binding IsChecked, ElementName=RolloverRule}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Label Content="Days of higher" />
+                                    <ComboBox Name="RolloverRuleType" ItemsSource="{Binding Source={helpers:Enumeration {x:Type qdms:ContinuousFuturesRolloverType}}}"
+                                              DisplayMemberPath="Description"
+                                              SelectedValuePath="Value" 
+                                              SelectedIndex="0" 
+                                              Grid.Column="1"
+                                              SelectedItem="{Binding Instrument.ContinuousFuture.RolloverType, Converter={StaticResource EnumerationMemberToEnumConverter}}" >
+                                    </ComboBox>
+                                </Grid>
+
+                                <Grid Margin="5" IsEnabled="{Binding IsChecked, ElementName=RolloverTime}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Label Content="Trading days prior to expiration" />
+                                    <TextBox x:Name="RolloverTimeDays" 
+                                             Grid.Column="1"
+                                             Text="{Binding Instrument.ContinuousFuture.RolloverDays,Converter={StaticResource StringToIntConverter}}" TextWrapping="Wrap" />
+
+                                </Grid>
+                               
+                            </StackPanel>
+
+
+
                         </Grid>
                     </GroupBox>
                     <Label Grid.Row="3"  Content="Contract Month:" HorizontalAlignment="Left" Margin="5,14,0,0" VerticalAlignment="Top" Height="23" Width="135"/>
                     <ComboBox Grid.Row="3"  x:Name="ContractMonthComboBox" HorizontalAlignment="Left" SelectedIndex="0"
                               IsEditable="False" ItemsSource="{Binding ContractMonths}" DisplayMemberPath="Value" SelectedValuePath="Key"
-                              SelectedValue="{Binding TheInstrument.ContinuousFuture.Month}"
+                              SelectedValue="{Binding Instrument.ContinuousFuture.Month}"
                                 Margin="145,10,0,0" VerticalAlignment="Top" Width="176" Height="26">
                     </ComboBox>
-                    <Label Grid.Row="3"  Content="Adjustment Method:" HorizontalAlignment="Left" Margin="5,42,0,0" VerticalAlignment="Top" Height="23" Width="135"/>
+                    <Label Grid.Row="3"  Content="Adjustment Method:" HorizontalAlignment="Left" Margin="5,42,0,0" VerticalAlignment="Top"  Width="135"/>
                     <ComboBox Grid.Row="3"  x:Name="AdjustmentMethodComboBox" HorizontalAlignment="Left" SelectedIndex="0"
-                        SelectedItem="{Binding TheInstrument.ContinuousFuture.AdjustmentMode}" ItemsSource="{Binding Source={StaticResource AdjMethodEnum}}" 
+                        SelectedItem="{Binding Instrument.ContinuousFuture.AdjustmentMode}" ItemsSource="{Binding Source={StaticResource AdjMethodEnum}}" 
                               Margin="145,40,0,0" VerticalAlignment="Top" Width="176" Height="26">
                     </ComboBox>
 
@@ -333,8 +437,11 @@
                 </Grid>
             </TabItem>
         </TabControl>
-        <Button x:Name="AddBtn" Click="AddBtn_Click" Content="Add" Margin="0,0,85,0" Grid.Row="1" VerticalAlignment="Top" Height="20"  HorizontalAlignment="Right" Width="75" />
-        <Button x:Name="CancelBtn" Click="CancelBtn_Click" Content="Cancel" Margin="0,0,5,0" Grid.Row="1" VerticalAlignment="Top" Height="20"  HorizontalAlignment="Right" Width="75"/>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button x:Name="AddBtn" Command="{Binding AddCommand}" Content="Add" Margin="10 5" MinWidth="80"/>
+            <Button x:Name="CancelBtn" Click="CancelBtn_Click" Content="Cancel" Margin="5" MinWidth="80"/>
+        </StackPanel>
 
     </Grid>
 </controls:MetroWindow>

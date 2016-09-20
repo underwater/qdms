@@ -8,12 +8,13 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using ProtoBuf;
+using System.ComponentModel;
 
 namespace QDMS
 {
     [ProtoContract]
     [Serializable]
-    public class ContinuousFuture : ICloneable
+    public class ContinuousFuture : ICloneable, INotifyPropertyChanged
     {
         public ContinuousFuture()
         {
@@ -60,11 +61,16 @@ namespace QDMS
         [ProtoMember(4)]
         public int Month { get; set; }
 
+        private ContinuousFuturesRolloverType _rolloverType;
         /// <summary>
         /// What criteria should be used when determining whether to roll over to the next contract.
         /// </summary>
         [ProtoMember(5)]
-        public ContinuousFuturesRolloverType RolloverType { get; set; }
+        public ContinuousFuturesRolloverType RolloverType
+        {
+            get { return _rolloverType; }
+            set { _rolloverType = value; OnNotifyPropertyChanged(nameof(RolloverType)); }
+        }
 
         /// <summary>
         /// Number of days that the criteria will use to determine rollover.
@@ -113,6 +119,13 @@ namespace QDMS
 
         [ProtoMember(19)]
         public bool UseDec { get; set; }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public void OnNotifyPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
 
         public bool MonthIsUsed(int month)
         {

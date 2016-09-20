@@ -478,7 +478,7 @@ namespace QDMSServer
             window.ShowDialog();
             if (window.InstrumentAdded)
             {
-                Instruments.Add(window.TheInstrument);
+                Instruments.Add(window.Instrument);
             }
             window.Close();
         }
@@ -489,7 +489,7 @@ namespace QDMSServer
             window.ShowDialog();
             if (window.InstrumentAdded)
             {
-                Instruments.Add(window.TheInstrument);
+                Instruments.Add(window.Instrument);
             }
             window.Close();
         }
@@ -502,7 +502,7 @@ namespace QDMSServer
             window.ShowDialog();
             if (window.InstrumentAdded)
             {
-                Instruments.Add(window.TheInstrument);
+                Instruments.Add(window.Instrument);
             }
             window.Close();
         }

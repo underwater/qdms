@@ -25,9 +25,9 @@ namespace QDMSServer
     /// <summary>
     /// Interaction logic for AddInstrumentQuandlWindow.xaml
     /// </summary>
-    public partial class AddInstrumentQuandlWindow : MetroWindow, IViewFor<AddInstrumentQuandlViewModel>
+    public partial class AddInstrumentQuandlWindow : MetroWindow, IViewFor<QuandlViewModel>
     {
-        public AddInstrumentQuandlViewModel ViewModel { get; set; }
+        public QuandlViewModel ViewModel { get; set; }
 
         object IViewFor.ViewModel
         {
@@ -38,22 +38,26 @@ namespace QDMSServer
 
             set
             {
-                ViewModel = (AddInstrumentQuandlViewModel)value;
+                ViewModel = (QuandlViewModel)value;
             }
         }
 
         public AddInstrumentQuandlWindow()
         {
             InitializeComponent();
-            ViewModel = Locator.Current.GetService<AddInstrumentQuandlViewModel>();
+            ViewModel = Locator.Current.GetService<QuandlViewModel>();
             DataContext = ViewModel;
 
             Observable.FromEventPattern<KeyEventArgs>(SearchTextBox, nameof(SearchTextBox.KeyDown))
                 .Where(e => e.EventArgs.Key == Key.Enter)
                 .InvokeCommand(ViewModel.SearchCommand);
 
-            //Observable.FromEventPattern<SelectionChangedEventArgs>(InstrumentGrid, nameof(InstrumentGrid.SelectionChanged))
-            //   .Subscribe(x => ViewModel.SelectedItems = x.EventArgs.AddedItems.Cast<Instrument>().ToList());
+            Observable.FromEventPattern<SelectionChangedEventArgs>(InstrumentGrid, nameof(InstrumentGrid.SelectionChanged))
+                
+               .Subscribe(x =>
+               {
+                   ViewModel.SelectedItems = InstrumentGrid.SelectedItems.Cast<Instrument>().ToList();
+               });
 
             this.WhenAnyObservable(x => x.ViewModel.CloseCommand)
                 .Subscribe(x => Hide());

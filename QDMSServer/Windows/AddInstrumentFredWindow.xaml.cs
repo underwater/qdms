@@ -25,36 +25,47 @@ namespace QDMSServer
     /// <summary>
     /// Interaction logic for AddInstrumentQuandlWindow.xaml
     /// </summary>
-    public partial class AddInstrumentFredWindow : MetroWindow, IViewFor<AddInstrumentFredViewModel>
+    public partial class AddInstrumentFredWindow : MetroWindow, IViewFor<FredViewModel>, IActivatable
     {
-        public AddInstrumentFredViewModel ViewModel { get; set; }
+        public FredViewModel ViewModel { get; set; }
 
         object IViewFor.ViewModel
         {
             get { return ViewModel; }
 
-            set { ViewModel = (AddInstrumentFredViewModel)value; }
+            set { ViewModel = (FredViewModel)value; }
         }
 
 
         public AddInstrumentFredWindow()
         {
             InitializeComponent();
-            ViewModel = Locator.Current.GetService<AddInstrumentFredViewModel>();
+            ViewModel = Locator.Current.GetService<FredViewModel>();
             DataContext = ViewModel;
 
-            Observable.FromEventPattern<SelectionChangedEventArgs>(InstrumentGrid, nameof(InstrumentGrid.SelectionChanged))
-                .Subscribe(x => ViewModel.SelectedItems = x.EventArgs.AddedItems.Cast<FredUtils.FredSeries>().ToList());
-                
+            this.WhenActivated(d => 
+            {
 
+            });
+
+            IDisposable obj =  Observable.FromEventPattern<SelectionChangedEventArgs>(InstrumentGrid, nameof(InstrumentGrid.SelectionChanged))
+                .Subscribe(x => ViewModel.SelectedItems = x.EventArgs.AddedItems.Cast<FredUtils.FredSeries>().ToList());
+                    
             Observable.FromEventPattern<KeyEventArgs>(SearchTextBox, nameof(SearchTextBox.KeyDown))
                 .Where(e => e.EventArgs.Key == Key.Enter)
                 .InvokeCommand(ViewModel.SearchCommand);
 
-
+            SearchTextBox.KeyDown += SearchTextBox_KeyDown;
             this.WhenAnyObservable(x => x.ViewModel.CloseCommand)
                 .Subscribe(x => Hide());            
         }
 
+        private void SearchTextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.Key == Key.Enter)
+            {
+                ViewModel.SearchCommand.Execute(null);
+            }
+        }
     }
 }

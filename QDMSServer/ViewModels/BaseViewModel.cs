@@ -15,6 +15,8 @@ namespace QDMSServer.ViewModels
             CloseCommand = ReactiveCommand.Create();
         }
 
+        public string Title { get; set; }
+
         private Logger _logger = LogManager.GetCurrentClassLogger();
 
         public Logger Logger { get { return _logger; } }

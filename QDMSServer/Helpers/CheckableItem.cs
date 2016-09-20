@@ -6,14 +6,14 @@
 
 using System.ComponentModel;
 
-namespace QDMSServer
+namespace QDMSServer.Helpers
 {
-    public class CheckBoxItem<T>
+    public class CheckableItem<T>
     {
         private bool _isChecked;
         private T _item;
 
-        public CheckBoxItem(T item, bool isChecked = false)
+        public CheckableItem(T item, bool isChecked = false)
         {
             _item = item;
             _isChecked = isChecked;

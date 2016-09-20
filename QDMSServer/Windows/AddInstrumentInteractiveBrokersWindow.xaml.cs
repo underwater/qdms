@@ -25,7 +25,7 @@ namespace QDMSServer
         {
             try
             {
-                ViewModel = new AddInstrumentIbViewModel(DialogCoordinator.Instance);
+                ViewModel = new IbViewModel(DialogCoordinator.Instance);
             }
             catch (Exception ex)
             {
@@ -60,6 +60,6 @@ namespace QDMSServer
                 ViewModel.Search.Execute(null);
         }
 
-        public AddInstrumentIbViewModel ViewModel { get; set; }
+        public IbViewModel ViewModel { get; set; }
     }
 }

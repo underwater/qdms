@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace QDMSServer.ViewModels
 {
-    public class BaseAddInstrumentViewModel<T> : BaseViewModel where T : class
+    public class AddInstrumentBaseViewModel<T> : BaseViewModel where T : class
     {
         protected const string ApiKey = "f8d71bdcf1d7153e157e0baef35f67db";
         private IList<T> _selectedSeries;

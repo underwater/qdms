@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace QDMSServer.ViewModels
 {
-    public class AddInstrumentQuandlViewModel : BaseAddInstrumentViewModel<Instrument>
+    public class QuandlViewModel : AddInstrumentBaseViewModel<Instrument>
     {
         private readonly Datasource CurrentDatasource;
         private int _totalItemsCount;
@@ -65,7 +65,7 @@ namespace QDMSServer.ViewModels
             set { }
         }
 
-        public AddInstrumentQuandlViewModel() : base()
+        public QuandlViewModel() : base()
         {
             MainViewModel = Locator.Current.GetService<MainViewModel>();
             EntityContext = new QDMSDbContext();
@@ -82,7 +82,14 @@ namespace QDMSServer.ViewModels
             })
             .OnExecuteCompleted(x =>
             {
-                Items = new ObservableCollection<Instrument>(x);
+                Items = new ObservableCollection<Instrument>();
+                foreach (Instrument instrument in x)
+                {
+                    instrument.Datasource = CurrentDatasource;
+                    instrument.DatasourceID = CurrentDatasource.ID;
+                    instrument.Multiplier = 1;
+                    Items.Add(instrument);
+                }
                 ItemsPerPage = QuandlUtils.ItemsPerPage;
                 TotalItemsCount = QuandlUtils.TotalItemsCount;
                 Status = TotalItemsCount + " contracts found.";
@@ -107,7 +114,7 @@ namespace QDMSServer.ViewModels
                 SearchCommand.Execute(null);
             });
 
-            AddCommand = ReactiveCommand.Create();
+            AddCommand = ReactiveCommand.Create(this.WhenAny(x => x.SelectedItems, x => x.Value != null && x.Value.Count > 0));
             AddCommand.Subscribe(_ =>
             {
                 var instrumentSource = new InstrumentManager();
@@ -119,8 +126,9 @@ namespace QDMSServer.ViewModels
                     if (instrument.PrimaryExchange != null)
                         instrument.PrimaryExchangeID = instrument.PrimaryExchange.ID;
 
-                    if(instrumentSource.AddInstrument(instrument) != null)
+                    if (instrumentSource.AddInstrument(instrument) != null)
                         addedInstrumentCount++;
+                    MainViewModel?.Instruments?.Add(instrument);
                 }
                 Status = string.Format("{0}/{1} instruments added.", addedInstrumentCount, SelectedItems.Count);
             });

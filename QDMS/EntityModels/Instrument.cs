@@ -11,12 +11,13 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using ProtoBuf;
+using System.ComponentModel;
 
 namespace QDMS
 {
     [ProtoContract]
     [Serializable]
-    public class Instrument : ICloneable
+    public class Instrument : ICloneable, INotifyPropertyChanged
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -89,11 +90,13 @@ namespace QDMS
         [NonSerialized]
         private int _expirationDay;
 
+
         [ProtoMember(10)]
-        public OptionType? OptionType { get; set; }
+        public OptionType? OptionType { get;
+            set; }
 
         [ProtoMember(11)]
-        
+
         public decimal? Strike { get; set; }
 
         [ProtoMember(12)]
@@ -139,7 +142,12 @@ namespace QDMS
         [ProtoMember(24)]
         public int? ContinuousFutureID { get; set; }
 
-        public SessionsSource SessionsSource { get; set; }
+        private SessionsSource _sessionSource;
+        public SessionsSource SessionsSource
+        {
+            get { return _sessionSource; }
+            set { _sessionSource = value; OnNotifyPropertyChanged(nameof(SessionsSource)); }
+        }
 
         [ProtoMember(26)]
         public virtual ICollection<InstrumentSession> Sessions { get; set; }
@@ -171,7 +179,7 @@ namespace QDMS
         {
             return TimeZoneInfo.FindSystemTimeZoneById(
                 Exchange == null || string.IsNullOrEmpty(Exchange.Timezone)
-                    ? "UTC" 
+                    ? "UTC"
                     : Exchange.Timezone);
         }
 
@@ -208,7 +216,7 @@ namespace QDMS
                 sb.Append(" DS: " + Datasource.Name);
 
 
-            if(!string.IsNullOrEmpty(Currency))
+            if (!string.IsNullOrEmpty(Currency))
                 sb.Append(string.Format("({0})", Currency));
 
             return sb.ToString().Trim();
@@ -258,6 +266,13 @@ namespace QDMS
                 clone.ContinuousFuture = (ContinuousFuture)ContinuousFuture.Clone();
             }
             return clone;
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public void OnNotifyPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

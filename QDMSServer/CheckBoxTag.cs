@@ -5,10 +5,11 @@
 // -----------------------------------------------------------------------
 
 using QDMS;
+using QDMSServer.Helpers;
 
 namespace QDMSServer
 {
-    public class CheckBoxTag : CheckBoxItem<Tag>
+    public class CheckBoxTag : CheckableItem<Tag>
     {
         public CheckBoxTag(Tag item, bool isChecked = false) : base(item, isChecked)
         {

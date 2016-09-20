@@ -44,9 +44,6 @@
             </TextBlock>
 
             <Button Command="{Binding NextPageCommand}" Content=">" Width="50" Height="30" Margin="5" />
-            
-            <!--<TextBox Name="CurrentPageTextBox" KeyDown="TextBox_KeyDown" Grid.Row="0" HorizontalAlignment="Left" Height="23" Margin="640,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="42"/>-->
-
         </StackPanel>
 
 

@@ -26,6 +26,6 @@ namespace QDMS
         /// Custom
         /// </summary>
         [Description("Custom")]
-        Custom = 2,
+        Custom = 2
     }
 }

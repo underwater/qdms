@@ -10,13 +10,12 @@ using System.Threading.Tasks;
 
 namespace QDMSServer.ViewModels
 {
-    public class AddInstrumentFredViewModel : BaseAddInstrumentViewModel<FredUtils.FredSeries>
+    public class FredViewModel : AddInstrumentBaseViewModel<FredUtils.FredSeries>
     {
 
         public MainViewModel MainViewModel { get; set; }
 
-
-        public AddInstrumentFredViewModel() : base()
+        public FredViewModel() : base()
         {
             var canSearch = this.WhenAny(x => x.SearchText, x => !string.IsNullOrEmpty(x.Value));
             SearchCommand = ReactiveCommand.CreateAsyncTask(canSearch, async _ =>

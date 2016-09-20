@@ -8,8 +8,15 @@ using System.Threading.Tasks;
 
 namespace QDMSServer.ViewModels
 {
-    public class MainViewModel
+    public class MainViewModel : BaseViewModel
     {
         public ObservableCollection<Instrument> Instruments { get; set; }
+
+        private Instrument _selectedInstrument;
+        public Instrument SelectedInstrument
+        {
+            get { return _selectedInstrument; }
+            set { _selectedInstrument = value; }
+        }
     }
 }

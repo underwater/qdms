@@ -20,9 +20,9 @@ using MahApps.Metro.Controls.Dialogs;
 
 namespace QDMSServer.ViewModels
 {
-    public class AddInstrumentIbViewModel : ReactiveObject, IDisposable
+    public class IbViewModel : ReactiveObject, IDisposable
     {
-        public AddInstrumentIbViewModel(DialogCoordinator dialogService)
+        public IbViewModel(DialogCoordinator dialogService)
         {
             _dialogService = dialogService;
             CreateCommands();

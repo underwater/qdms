@@ -256,7 +256,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="CheckBoxItem.cs" />
+    <Compile Include="Helpers\CheckableItem.cs" />
     <Compile Include="CheckBoxTag.cs" />
     <Compile Include="ColumnOptions.cs" />
     <Compile Include="DataGridExtensions.cs" />
@@ -271,12 +271,15 @@
     <Compile Include="UpdateHelper.cs" />
     <Compile Include="Utils\DbBackup.cs" />
     <Compile Include="Utils\DBUtils.cs" />
+    <Compile Include="Helpers\EnumerationExtension.cs" />
     <Compile Include="Utils\MySQLBackup.cs" />
     <Compile Include="Utils\QuandlUtils.cs" />
     <Compile Include="Utils\Seed.cs" />
     <Compile Include="Utils\SqlServerBackup.cs" />
     <Compile Include="ValidationRules\TimeValidationRule.cs" />
     <Compile Include="ValueConverters\DatasourceMultiValueConverter.cs" />
+    <Compile Include="ValueConverters\EnumerationMemberToEnumConverter.cs" />
+    <Compile Include="ValueConverters\EnumToBooleanConverter.cs" />
     <Compile Include="ValueConverters\ExchangeMultiValueConverter.cs" />
     <Compile Include="ValueConverters\InvertBooleanConverter.cs" />
     <Compile Include="ValueConverters\IsNullConverter.cs" />
@@ -285,10 +288,11 @@
     <Compile Include="ValueConverters\StringToNullableConverter.cs" />
     <Compile Include="ValueConverters\TimeSpanConverter.cs" />
     <Compile Include="ValueConverters\TZToStringConverter.cs" />
-    <Compile Include="ViewModels\AddInstrumentFredViewModel.cs" />
-    <Compile Include="ViewModels\AddInstrumentIbViewModel.cs" />
-    <Compile Include="ViewModels\AddInstrumentQuandlViewModel.cs" />
-    <Compile Include="ViewModels\BaseAddInstrumentViewModel.cs" />
+    <Compile Include="ViewModels\AddInstrument\FredViewModel.cs" />
+    <Compile Include="ViewModels\AddInstrument\IbViewModel.cs" />
+    <Compile Include="ViewModels\AddInstrument\ManualViewModel.cs" />
+    <Compile Include="ViewModels\AddInstrument\QuandlViewModel.cs" />
+    <Compile Include="ViewModels\AddInstrument\AddInstrumentBaseViewModel.cs" />
     <Compile Include="ViewModels\BaseViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="Windows\AboutWindow.xaml.cs">
@@ -556,6 +560,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\109_AllAnnotations_Error_16x16_72.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Windows\AddInstrument\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
