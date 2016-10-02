@@ -54,7 +54,12 @@
                 <ScrollViewer>
                     <StackPanel>
                         <StackPanel>
-                            <TextBlock Visibility="Collapsed" FontSize="16" Name="ErrorMessage" Margin="10" Foreground="Red" Text="{Binding ErrorMessage}"/>
+                            <TextBlock Visibility="Collapsed" TextWrapping="Wrap" 
+                                       FontSize="14" 
+                                       Name="ErrorMessage" 
+                                       Margin="10" Foreground="Red" 
+                                       Text="{Binding ErrorMessage}"
+                                       />
                         </StackPanel>
                         <Grid>
                             <Grid.ColumnDefinitions>
@@ -102,10 +107,10 @@
                             <TextBlock Grid.Row="4" Grid.Column="0" Text="Exchange:" VerticalAlignment="Center" Margin="5 2"/>
                             <StackPanel Orientation="Horizontal" Grid.Row="4" Grid.Column="1">
                                 <ComboBox MinWidth="150" Margin="5 2"
-                                  SelectionChanged="ExchangeComboBox_OnSelectedIndexChanged" 
                                   IsEnabled="{Binding IsChecked, Converter={StaticResource InvertBooleanConverter}, ElementName=ExchangeNullCheckBox}"   
                                   x:Name="ExchangeComboBox" IsTextSearchEnabled="True" 
-                                  ItemsSource="{Binding Exchanges}" DisplayMemberPath="Name" >
+                                  ItemsSource="{Binding Exchanges}" 
+                                          DisplayMemberPath="Name" >
                                     <ComboBox.SelectedItem>
                                         <MultiBinding Converter="{StaticResource ExchangeMultiValueConverter}">
                                             <Binding Path="Instrument.Exchange" Mode="TwoWay" />
@@ -158,8 +163,7 @@
                                   x:Name="OptionTypeComboBox" 
                                   IsTextSearchEnabled="True" 
                                   SelectedItem="{Binding Instrument.OptionType, Converter={StaticResource EnumerationMemberToEnumConverter}}" Margin="5 2"/>
-                                <CheckBox Click="OptionTypeNullCheckBox_Click"
-                                  x:Name="OptionTypeNullCheckBox" 
+                                <CheckBox x:Name="OptionTypeNullCheckBox" 
                                   IsChecked="{Binding Instrument.OptionType, Converter={StaticResource IsNullConverter}, Mode=OneWay}" 
                                   Content="Null" />
 
@@ -267,13 +271,13 @@
 
                     <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="10 0">
                         <Button Width="40" Height="40" IsEnabled="{Binding ElementName=CustomRadioBtn,Path=IsChecked}" Style="{StaticResource MetroCircleButtonStyle}"  
-                                Click="AddSessionItemBtn_Click" 
+                                Command="{Binding AddSessionCommand}"
                                 Name="AddSessionItemBtn" 
                                 Content="+" 
                                 FontSize="17"/>
 
                         <Button IsEnabled="{Binding ElementName=CustomRadioBtn,Path=IsChecked}" Style="{StaticResource MetroCircleButtonStyle}"
-                                Click="DeleteSessionItemBtn_Click" 
+                                Command="{Binding DeleteSessionCommand}"
                                 Width="40" Height="40"
                                 FontSize="17"
                                 Foreground="Red"
@@ -283,8 +287,8 @@
                     </StackPanel>
 
                     <DataGrid  Name="SessionsGrid" IsEnabled="{Binding ElementName=CustomRadioBtn,Path=IsChecked}" Margin="10" 
-                               ItemsSource="{Binding SelectedSessions}" AutoGenerateColumns="False"  HorizontalAlignment="Stretch" 
-                                VerticalAlignment="Stretch" Grid.Row="2" CanUserAddRows="False">
+                               ItemsSource="{Binding Sessions}" SelectedItem="{Binding SelectedSession}" AutoGenerateColumns="False"  HorizontalAlignment="Stretch" 
+                               VerticalAlignment="Stretch" Grid.Row="2" CanUserAddRows="False">
 
                         <DataGrid.Columns>
                             <DataGridComboBoxColumn SelectedItemBinding="{Binding Path=OpeningDay}" SortDirection="Ascending" Header="Open" Width="65" ItemsSource="{Binding Source={StaticResource DOTWEnum}}" />
@@ -413,7 +417,7 @@
                                              Text="{Binding Instrument.ContinuousFuture.RolloverDays,Converter={StaticResource StringToIntConverter}}" TextWrapping="Wrap" />
 
                                 </Grid>
-                               
+
                             </StackPanel>
 
 
@@ -440,7 +444,7 @@
 
         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button x:Name="AddBtn" Command="{Binding AddCommand}" Content="Add" Margin="10 5" MinWidth="80"/>
-            <Button x:Name="CancelBtn" Click="CancelBtn_Click" Content="Cancel" Margin="5" MinWidth="80"/>
+            <Button x:Name="CancelBtn" Command="{Binding CloseCommand}" Content="Cancel" Margin="5" MinWidth="80"/>
         </StackPanel>
 
     </Grid>

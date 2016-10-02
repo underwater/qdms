@@ -57,7 +57,7 @@ namespace QDMSServer
         {
             if (SymbolsGrid.SelectedItems.Count == 0) return;
 
-            var window = new EditSessionTemplateWindow((SessionTemplate)SymbolsGrid.SelectedItem);
+            var window = new EditSessionTemplateWindow();
             window.ShowDialog();
             CollectionViewSource.GetDefaultView(SymbolsGrid.ItemsSource).Refresh();
         }

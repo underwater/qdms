@@ -6,6 +6,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -22,7 +23,7 @@ namespace QDMS
         [MaxLength(255)]
         public string Name { get; set; }
 
-        public virtual ICollection<TemplateSession> Sessions { get; set; }
+        public virtual List<TemplateSession> Sessions { get; set; }
 
         /// <summary>
         /// Creates a new object that is a copy of the current instance.

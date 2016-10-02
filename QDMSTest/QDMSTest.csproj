@@ -169,9 +169,9 @@
       <Project>{28833ee8-5a50-4772-9071-3d16fbf21134}</Project>
       <Name>QDMSClient</Name>
     </ProjectReference>
-    <ProjectReference Include="..\QDMSServer\QDMSServer.csproj">
+    <ProjectReference Include="..\QDMSServer\QDMS.Server.Manager.csproj">
       <Project>{1ad82972-fd44-4ed2-b909-a0738f6c03fe}</Project>
-      <Name>QDMSServer</Name>
+      <Name>QDMS.Server.Manager</Name>
     </ProjectReference>
     <ProjectReference Include="..\QDMS\QDMS.csproj">
       <Project>{7ea40d71-4d14-4b86-b07d-932959fa0d20}</Project>

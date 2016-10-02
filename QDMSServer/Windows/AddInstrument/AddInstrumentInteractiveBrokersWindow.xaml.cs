@@ -25,7 +25,7 @@ namespace QDMSServer
         {
             try
             {
-                ViewModel = new IbViewModel(DialogCoordinator.Instance);
+                //ViewModel = new IbViewModel(DialogCoordinator.Instance);
             }
             catch (Exception ex)
             {

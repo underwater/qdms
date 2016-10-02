@@ -22,7 +22,7 @@ namespace QDMSServer.ViewModels
     {
         private readonly List<InstrumentSession> _originalSessions;
         private QDMSDbContext _context;
-        private SessionTemplate _selectedTemplate;
+        private QDMS.SessionTemplate _selectedTemplate;
         private bool _isEditMode;
 
 
@@ -38,15 +38,24 @@ namespace QDMSServer.ViewModels
 
         public ObservableCollection<Exchange> Exchanges { get; set; }
 
-        public ObservableCollection<SessionTemplate> Templates { get; set; }
+        public ObservableCollection<QDMS.SessionTemplate> Templates { get; set; }
 
-        public SessionTemplate SelectedTemplate
+        public QDMS.SessionTemplate SelectedTemplate
         {
             get { return _selectedTemplate; }
             set { this.RaiseAndSetIfChanged(ref _selectedTemplate, value); }
         }
 
         public ObservableCollection<InstrumentSession> Sessions { get; set; }
+
+        private InstrumentSession _selectedSession;
+
+        public InstrumentSession SelectedSession
+        {
+            get { return _selectedSession; }
+            set { this.RaiseAndSetIfChanged(ref _selectedSession, value); }
+        }
+
 
         public ObservableCollection<Datasource> Datasources { get; set; }
 
@@ -57,6 +66,11 @@ namespace QDMSServer.ViewModels
         public ObservableCollection<KeyValuePair<int, string>> ContractMonths { get; set; }
 
         public ReactiveCommand<object> AddCommand { get; set; }
+
+        public ReactiveCommand<object> AddSessionCommand { get; set; }
+
+        public ReactiveCommand<object> DeleteSessionCommand { get; set; }
+
         public bool InstrumentAdded { get; private set; }
 
         private string _errorMessage;
@@ -72,7 +86,7 @@ namespace QDMSServer.ViewModels
             IsEditMode = isEditMode;
 
             Exchanges = new ObservableCollection<Exchange>(_context.Exchanges.OrderBy(x => x.Name));
-            Templates = new ObservableCollection<SessionTemplate>(_context.SessionTemplates.Include("Sessions").ToList());
+            Templates = new ObservableCollection<QDMS.SessionTemplate>(_context.SessionTemplates.Include("Sessions").ToList());
             Datasources = new ObservableCollection<Datasource>(_context.Datasources);
             UnderlyingSymbols = new ObservableCollection<UnderlyingSymbol>(_context.UnderlyingSymbols);
             FillContractMonths();
@@ -108,15 +122,20 @@ namespace QDMSServer.ViewModels
                             _context.InstrumentSessions.Attach(session);
                         }
                     }
+
                     if (clone)
-                    {
                         Instrument = (Instrument)Instrument.Clone();
-                    }
 
-                    if (Instrument.Tags == null) Instrument.Tags = new List<Tag>();
-                    if (Instrument.Sessions == null) Instrument.Sessions = new List<InstrumentSession>();
+                    if (Instrument.Tags == null)
+                        Instrument.Tags = new List<Tag>();
 
-                    Instrument.Sessions = Instrument.Sessions.OrderBy(x => x.OpeningDay).ThenBy(x => x.OpeningTime).ToList();
+                    if (Instrument.Sessions == null)
+                        Instrument.Sessions = new List<InstrumentSession>();
+
+                    Instrument.Sessions = Instrument.Sessions
+                        .OrderBy(x => x.OpeningDay)
+                        .ThenBy(x => x.OpeningTime)
+                        .ToList();
 
                     _originalSessions = new List<InstrumentSession>(Instrument.Sessions);
                 }
@@ -161,16 +180,58 @@ namespace QDMSServer.ViewModels
                     FillSessionsFromTemplate();
                 });
 
+            this.WhenAny(x => x.Instrument.Exchange, x => x.Value)
+                .Where(e => e != null && Instrument.SessionsSource == SessionsSource.Exchange)
+                .Subscribe(_ => AddSessionFromInstrument());
+
+            this.WhenAny(x => x.Instrument.SessionsSource, x => x.Value)
+                .Where(source => Instrument.Exchange != null && source == SessionsSource.Exchange)
+                .Subscribe(_ => AddSessionFromInstrument());
+
             AddCommand = ReactiveCommand.Create();
-            AddCommand.Subscribe(_ =>
+            AddCommand.Subscribe(_ => Add());
+
+            AddSessionCommand = ReactiveCommand.Create();
+            AddSessionCommand.Subscribe(_ =>
             {
-                Add();
+                var toAdd = new InstrumentSession { IsSessionEnd = true };
+
+                if (Sessions.Count == 0)
+                {
+                    toAdd.OpeningDay = DayOfTheWeek.Monday;
+                    toAdd.ClosingDay = DayOfTheWeek.Monday;
+                }
+                else
+                {
+                    DayOfTheWeek maxDay = (DayOfTheWeek)Math.Min(6, Sessions.Max(x => (int)x.OpeningDay) + 1);
+                    toAdd.OpeningDay = maxDay;
+                    toAdd.ClosingDay = maxDay;
+                }
+                Sessions.Add(toAdd);
             });
 
+            var canDeleteSession = this.WhenAny(x => x.SelectedSession, x => x.Value != null);
+            DeleteSessionCommand = ReactiveCommand.Create(canDeleteSession);
+            DeleteSessionCommand.Subscribe(_ =>
+            {
+                Sessions.Remove(SelectedSession);
+            });
         }
+
+        private void AddSessionFromInstrument()
+        {
+            Sessions.Clear();
+            foreach (ExchangeSession s in Instrument.Exchange.Sessions)
+            {
+                Sessions.Add(s.ToInstrumentSession());
+            }
+        }
+
+        public bool HasError { get; set; }
 
         private void Add()
         {
+            HasError = false;
             MessageBus.Current.SendMessage(ShowErrorMessage.Hidden);
             if (!IsEditMode &&
                             _context.Instruments.Any(
@@ -190,25 +251,25 @@ namespace QDMSServer.ViewModels
             if (Instrument.SessionsSource == SessionsSource.Template && Instrument.SessionTemplateID == -1)
             {
                 MessageBus.Current.SendMessage("You must pick a session template.");
-                return;
+                HasError = true;
             }
 
             if (Instrument.IsContinuousFuture && Instrument.Type != InstrumentType.Future)
             {
                 MessageBus.Current.SendMessage("Continuous futures type must be Future.");
-                return;
+                HasError = true;
             }
 
             if (Instrument.Datasource == null)
             {
                 MessageBus.Current.SendMessage("You must select a data source.");
-                return;
+                HasError = true;
             }
 
             if (Instrument.Multiplier == null)
             {
                 MessageBus.Current.SendMessage("Must have a multiplier value.");
-                return;
+                HasError = true;
             }
 
             //Validate the sessions
@@ -221,9 +282,13 @@ namespace QDMSServer.ViewModels
                 catch (Exception ex)
                 {
                     MessageBus.Current.SendMessage(ex.Message);
-                    return;
+                    HasError = true;
                 }
             }
+
+            if (HasError)
+                return;
+
 
             //move selected sessions to the instrument
             Instrument.Sessions.Clear();
@@ -312,6 +377,12 @@ namespace QDMSServer.ViewModels
             {
                 Sessions.Add(s.ToInstrumentSession());
             }
+        }
+
+        public override void Dispose()
+        {
+            _context.Dispose();
+            base.Dispose();
         }
     }
 }

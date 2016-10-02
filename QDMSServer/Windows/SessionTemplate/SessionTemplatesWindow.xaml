@@ -1,0 +1,58 @@
+﻿<controls:MetroWindow x:Class="QDMSServer.SessionTemplatesWindow"
+                      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                      xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+                      Title="Session Templates"
+                      Width="445.906"
+                      Height="558"
+                      BorderBrush="Black"
+                      BorderThickness="1">
+    <controls:MetroWindow.Resources />
+
+    <Grid>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="97*" />
+            <ColumnDefinition Width="95" />
+        </Grid.ColumnDefinitions>
+
+        <DataGrid Name="TemplatesGrid"
+                  Grid.Column="0"
+                  Margin="10"
+                  HorizontalAlignment="Stretch"
+                  VerticalAlignment="Stretch"
+                  AutoGenerateColumns="False"
+                  IsReadOnly="True"
+                  ItemsSource="{Binding Templates}"
+                  SelectedItem="{Binding SelectedTemplate}">
+            <DataGrid.Columns>
+                <DataGridTextColumn Width="250"
+                                    Binding="{Binding Path=Name}"
+                                    Header="Name" />
+            </DataGrid.Columns>
+
+            <DataGrid.RowStyle>
+                <Style BasedOn="{StaticResource MetroDataGridRow}" TargetType="{x:Type DataGridRow}">
+                    <EventSetter Event="MouseDoubleClick" Handler="TableView_RowDoubleClick" />
+                    <Setter Property="MinHeight" Value="20" />
+                </Style>
+            </DataGrid.RowStyle>
+        </DataGrid>
+        <StackPanel Grid.Column="1" Margin="5">
+            <Button x:Name="AddBtn"
+                    Margin="5"
+                    Command="{Binding AddCommand}"
+                    Content="Add" />
+
+            <Button x:Name="ModifyBtn"
+                    Margin="5"
+                    Command="{Binding ModifyCommand}"
+                    Content="Modify" />
+
+            <Button x:Name="DeleteBtn"
+                    Margin="5"
+                    Command="{Binding DeleteCommand}"
+                    Content="Delete" />
+        </StackPanel>
+    </Grid>
+</controls:MetroWindow>

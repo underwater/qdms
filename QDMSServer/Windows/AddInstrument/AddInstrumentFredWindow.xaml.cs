@@ -45,27 +45,22 @@ namespace QDMSServer
 
             this.WhenActivated(d => 
             {
+                d(
+                    Observable.FromEventPattern<SelectionChangedEventArgs>(InstrumentGrid, nameof(InstrumentGrid.SelectionChanged))
+                        .Subscribe(x => ViewModel.SelectedItems = x.EventArgs.AddedItems.Cast<FredUtils.FredSeries>().ToList())
+                 );
+                d(
+                     Observable.FromEventPattern<KeyEventArgs>(SearchTextBox, nameof(SearchTextBox.KeyDown))
+                        .Where(e => e.EventArgs.Key == Key.Enter)
+                        .InvokeCommand(ViewModel.SearchCommand)
+                 );
+                d(
+                    this.WhenAnyObservable(x => x.ViewModel.CloseCommand)
+                        .Subscribe(x => Hide())
+                 );
 
             });
-
-            IDisposable obj =  Observable.FromEventPattern<SelectionChangedEventArgs>(InstrumentGrid, nameof(InstrumentGrid.SelectionChanged))
-                .Subscribe(x => ViewModel.SelectedItems = x.EventArgs.AddedItems.Cast<FredUtils.FredSeries>().ToList());
-                    
-            Observable.FromEventPattern<KeyEventArgs>(SearchTextBox, nameof(SearchTextBox.KeyDown))
-                .Where(e => e.EventArgs.Key == Key.Enter)
-                .InvokeCommand(ViewModel.SearchCommand);
-
-            SearchTextBox.KeyDown += SearchTextBox_KeyDown;
-            this.WhenAnyObservable(x => x.ViewModel.CloseCommand)
-                .Subscribe(x => Hide());            
-        }
-
-        private void SearchTextBox_KeyDown(object sender, KeyEventArgs e)
-        {
-            if(e.Key == Key.Enter)
-            {
-                ViewModel.SearchCommand.Execute(null);
-            }
+            
         }
     }
 }

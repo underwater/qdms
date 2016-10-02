@@ -92,8 +92,11 @@ namespace QDMS
 
 
         [ProtoMember(10)]
-        public OptionType? OptionType { get;
-            set; }
+        public OptionType? OptionType
+        {
+            get;
+            set;
+        }
 
         [ProtoMember(11)]
 
@@ -130,8 +133,13 @@ namespace QDMS
         [ProtoMember(90)]
         public int? DatasourceID { get; set; }
 
+        private Exchange _exchange;
         [ProtoMember(21)]
-        public virtual Exchange Exchange { get; set; }
+        public virtual Exchange Exchange
+        {
+            get { return _exchange; }
+            set { _exchange = value; OnNotifyPropertyChanged(nameof(Exchange)); }
+        }
 
         [ProtoMember(22)]
         public virtual Exchange PrimaryExchange { get; set; }
