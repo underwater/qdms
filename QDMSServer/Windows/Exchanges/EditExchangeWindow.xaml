@@ -1,4 +1,4 @@
-﻿<controls:MetroWindow x:Class="QDMSServer.EditSessionTemplateWindow"
+﻿<controls:MetroWindow x:Class="QDMSServer.EditExchangeWindow"
                       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                       xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
@@ -8,12 +8,14 @@
                       xmlns:system="clr-namespace:System;assembly=mscorlib"
                       xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
                       Title="{Binding Title}"
-                      Width="604"
-                      Height="450.85"
+                      Width="586"
+                      Height="416"
                       BorderBrush="Black"
                       BorderThickness="1">
     <controls:MetroWindow.Resources>
         <qdmsServer:TimeSpanConverter x:Key="TimeSpanConverter" />
+        <qdmsServer:TZToStringConverter x:Key="TZToStringConverter" />
+
         <ObjectDataProvider x:Key="DOTWEnum"
                             MethodName="GetValues"
                             ObjectType="{x:Type system:Enum}">
@@ -22,65 +24,83 @@
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
     </controls:MetroWindow.Resources>
-
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-
-        <Grid Grid.Row="0" Margin="5">
+        <Grid Grid.Row="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <Label Grid.Row="0"
-                   Grid.Column="0"
-                   Width="68"
-                   Margin="10,0,0,0"
-                   HorizontalAlignment="Left"
-                   VerticalAlignment="Top"
-                   Content="Name: " />
+            <Grid.Resources>
+                <Style TargetType="TextBlock">
+                    <Setter Property="VerticalAlignment" Value="Center" />
+                    <Setter Property="Margin" Value="5" />
+                </Style>
+                <Style TargetType="TextBox">
+                    <Setter Property="Margin" Value="10 5" />
+                </Style>
+            </Grid.Resources>
+            <TextBlock Grid.Row="0"
+                       Grid.Column="0"
+                       Text="Abbreviation: " />
 
             <TextBox Grid.Row="0"
-                     Grid.RowSpan="2"
                      Grid.Column="1"
-                     Height="20"
-                     Margin="10,2,10,0"
-                     HorizontalAlignment="Stretch"
-                     VerticalAlignment="Top"
-                     Text="{Binding Template.Name}"
+                     Text="{Binding Exchange.Name}"
                      TextWrapping="Wrap" />
+
+            <TextBlock Grid.Row="1"
+                       Grid.Column="0"
+                       Text="Long Name: " />
+
+            <TextBox Grid.Row="1"
+                     Grid.Column="1"
+                     Text="{Binding Exchange.LongName}"
+                     TextWrapping="Wrap" />
+
+            <TextBlock Grid.Row="2"
+                       Grid.Column="0"
+                       Text="Time Zone: " />
+            <ComboBox Name="TimeZoneComboBox"
+                      Grid.Row="2"
+                      Grid.Column="1"
+                      Margin="10 3"
+                      DisplayMemberPath="DisplayName"
+                      IsTextSearchEnabled="True"
+                      ItemsSource="{Binding TimeZones}"
+                      SelectedItem="{Binding Exchange.Timezone,
+                                             Converter={StaticResource TZToStringConverter}}" />
+
         </Grid>
-
-
 
         <Grid Grid.Row="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
-                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <Label Grid.Row="0"
-                   Margin="10 0"
-                   HorizontalAlignment="Left"
-                   VerticalAlignment="Top"
-                   Content="Sessions: " />
-
-
-
+            <TextBlock Grid.Row="0"
+                       Margin="5"
+                       FontSize="16"
+                       Foreground="{DynamicResource GrayBrush2}"
+                       Text="Sessions: " />
 
             <DataGrid Name="SessionsGrid"
                       Grid.Row="1"
-                      Margin="10"
-                      HorizontalAlignment="Stretch"
-                      VerticalAlignment="Stretch"
+                      Margin="8"
                       AutoGenerateColumns="False"
                       CanUserAddRows="False"
-                      ItemsSource="{Binding Template.Sessions}"
+                      ItemsSource="{Binding Exchange.Sessions}"
                       SelectedItem="{Binding SelectedSession}">
 
                 <DataGrid.Columns>
@@ -143,11 +163,8 @@
 
                 </DataGrid.Columns>
             </DataGrid>
-
-
-
             <StackPanel Grid.Row="1"
-                        Margin="25"
+                        Margin="18 10"
                         HorizontalAlignment="Right"
                         VerticalAlignment="Bottom"
                         Orientation="Horizontal">
@@ -166,17 +183,14 @@
                         Command="{Binding DeleteSessionCommand}"
                         Style="{StaticResource MetroCircleButtonStyle}">
                     <iconPacks:PackIconMaterial Kind="Delete" />
+
                 </Button>
             </StackPanel>
-            <StackPanel Grid.Row="2" Orientation="Horizontal" />
-
         </Grid>
-
-
         <StackPanel Grid.Row="2"
                     HorizontalAlignment="Right"
                     Orientation="Horizontal">
-            <Button x:Name="ModifyBtn"
+            <Button x:Name="SaveButton"
                     MinWidth="60"
                     Margin="5"
                     Command="{Binding SaveCommand}"
@@ -187,8 +201,6 @@
                     Command="{Binding CloseCommand}"
                     Content="Cancel" />
         </StackPanel>
-
-
 
     </Grid>
 </controls:MetroWindow>

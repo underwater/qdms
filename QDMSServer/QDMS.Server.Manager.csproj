@@ -298,6 +298,8 @@
     <Compile Include="ViewModels\AddInstrument\QuandlViewModel.cs" />
     <Compile Include="ViewModels\AddInstrument\AddInstrumentBaseViewModel.cs" />
     <Compile Include="ViewModels\BaseViewModel.cs" />
+    <Compile Include="ViewModels\Exchanges\EditExchangeViewModel.cs" />
+    <Compile Include="ViewModels\Exchanges\ExchangesViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\SessionTemplate\EditSessionTemplateViewModel.cs" />
     <Compile Include="ViewModels\SessionTemplate\SessionTemplatesViewModel.cs" />
@@ -340,13 +342,13 @@
     <Compile Include="Windows\DBConnectionWindow.xaml.cs">
       <DependentUpon>DBConnectionWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\EditExchangeWindow.xaml.cs">
+    <Compile Include="Windows\Exchanges\EditExchangeWindow.xaml.cs">
       <DependentUpon>EditExchangeWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\SessionTemplate\EditSessionTemplateWindow.xaml.cs">
       <DependentUpon>EditSessionTemplateWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\ExchangesWindow.xaml.cs">
+    <Compile Include="Windows\Exchanges\ExchangesWindow.xaml.cs">
       <DependentUpon>ExchangesWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\ScheduledJobsWindow.xaml.cs">
@@ -432,7 +434,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\EditExchangeWindow.xaml">
+    <Page Include="Windows\Exchanges\EditExchangeWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -440,7 +442,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\ExchangesWindow.xaml">
+    <Page Include="Windows\Exchanges\ExchangesWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

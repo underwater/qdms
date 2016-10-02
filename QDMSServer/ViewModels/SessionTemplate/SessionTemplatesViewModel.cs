@@ -12,6 +12,15 @@ namespace QDMSServer.ViewModels
 {
     public class SessionTemplatesViewModel : BaseViewModel
     {
+        private readonly QDMSDbContext _context;
+        
+        private SessionTemplate _selectedTemplate;
+        public SessionTemplate SelectedTemplate
+        {
+            get { return _selectedTemplate; }
+            set { this.RaiseAndSetIfChanged(ref _selectedTemplate, value); }
+        }
+
         public ReactiveCommand<object> AddCommand { get; set; }
 
         public ReactiveCommand<object> ModifyCommand { get; set; }
@@ -20,21 +29,12 @@ namespace QDMSServer.ViewModels
 
         public ReactiveCommand<object> ConfirmDeleteCommand { get; set; }
 
-        public ReactiveList<QDMS.SessionTemplate> Templates { get; set; }
+        public ReactiveList<SessionTemplate> Templates { get; set; }        
 
-        private QDMS.SessionTemplate _selectedTemplate;
-
-        public QDMS.SessionTemplate SelectedTemplate
-        {
-            get { return _selectedTemplate; }
-            set { this.RaiseAndSetIfChanged(ref _selectedTemplate, value); }
-        }
-
-        private readonly QDMSDbContext _context;
         public SessionTemplatesViewModel()
         {
             _context = new QDMSDbContext();
-            Templates = new ReactiveList<QDMS.SessionTemplate>(_context.SessionTemplates.Include("Sessions").OrderBy(s => s.Name));
+            Templates = new ReactiveList<SessionTemplate>(_context.SessionTemplates.Include("Sessions").OrderBy(s => s.Name));
             
 
             AddCommand = ReactiveCommand.Create();

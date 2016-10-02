@@ -44,13 +44,15 @@ namespace QDMSServer
                 if (result == MessageBoxResult.Yes)
                     ViewModel.ConfirmDeleteCommand.Execute(null);
             });
-            
             DataContext = ViewModel;
         }
 
         private void TableView_RowDoubleClick(object sender, MouseButtonEventArgs mouseButtonEventArgs)
         {
-            new EditSessionTemplateWindow(ViewModel, true).ShowDialog();            
+            if (ViewModel.SelectedTemplate != null)
+            {
+                new EditSessionTemplateWindow(ViewModel, true).ShowDialog();
+            }
         }
     }
 }

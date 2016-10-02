@@ -1,0 +1,77 @@
+﻿<controls:MetroWindow x:Class="QDMSServer.ExchangesWindow"
+                      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                      xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+                      Title="Exchanges"
+                      Width="510"
+                      Height="558"
+                      BorderBrush="Black"
+                      BorderThickness="1">
+    <controls:MetroWindow.Resources />
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="97*" />
+            <ColumnDefinition Width="95" />
+        </Grid.ColumnDefinitions>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0"
+                       Margin="10"
+                       VerticalAlignment="Center"
+                       Text="Search:" />
+            <TextBox Name="SearchBox"
+                     Grid.Column="1"
+                     Margin="10"
+                     Text="{Binding SearchText,
+                                    UpdateSourceTrigger=PropertyChanged}"
+                     TextWrapping="NoWrap" />
+        </Grid>
+
+
+
+        <DataGrid Name="ExchangesGrid"
+                  Grid.Row="1"
+                  Grid.Column="0"
+                  Margin="10"
+                  HorizontalAlignment="Stretch"
+                  VerticalAlignment="Stretch"
+                  AutoGenerateColumns="False"
+                  IsReadOnly="True"
+                  ItemsSource="{Binding Exchanges}"
+                  SelectedItem="{Binding SelectedExchange}">
+            <DataGrid.Columns>
+                <DataGridTextColumn Width="175"
+                                    Binding="{Binding Path=LongName}"
+                                    Header="Name" />
+                <DataGridTextColumn Width="175"
+                                    Binding="{Binding Path=Name}"
+                                    Header="Code"
+                                    SortDirection="Ascending" />
+            </DataGrid.Columns>
+            <DataGrid.RowStyle>
+                <Style BasedOn="{StaticResource MetroDataGridRow}" TargetType="{x:Type DataGridRow}">
+                    <EventSetter Event="MouseDoubleClick" Handler="TableView_RowDoubleClick" />
+                    <Setter Property="MinHeight" Value="20" />
+                </Style>
+            </DataGrid.RowStyle>
+        </DataGrid>
+        <StackPanel Grid.Row="1" Grid.Column="1">
+            <StackPanel.Resources>
+                <Style BasedOn="{StaticResource MetroButton}" TargetType="Button">
+                    <Setter Property="Margin" Value="5" />
+                </Style>
+            </StackPanel.Resources>
+            <Button Command="{Binding AddCommand}" Content="Add" />
+            <Button Command="{Binding ModifyCommand}" Content="Modify" />
+            <Button Command="{Binding DeleteCommand}" Content="Delete" />
+        </StackPanel>
+
+    </Grid>
+</controls:MetroWindow>

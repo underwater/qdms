@@ -12,83 +12,90 @@
                       BorderBrush="Black"
                       BorderThickness="1"
                       Closing="DXWindow_Closing"
-                      Icon="Resources\appbar.box.layered.png">
+                      GlowBrush="{DynamicResource AccentColorBrush}"
+                      Icon="Resources\appbar.box.layered.png"
+                      Style="{DynamicResource CleanWindowStyleKey}">
     <controls:MetroWindow.Resources>
-        <local:LogItemToColorConverter x:Key="LogColorConverter" />
-        <local:LogEventInfoToStringConverter x:Key="LogInfoToStringConverter" />
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Clean/Clean.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <local:LogItemToColorConverter x:Key="LogColorConverter" />
+            <local:LogEventInfoToStringConverter x:Key="LogInfoToStringConverter" />
 
-        <Style x:Key="FilterStyle"
-               BasedOn="{StaticResource {ComponentResourceKey TypeInTargetAssembly={x:Type filterLibrary:DataGridHeaderFilterControl},
-                                                              ResourceId=DataGridHeaderFilterControlStyle}}"
-               TargetType="DataGridColumnHeader">
-            <Setter Property="Padding" Value="5,4,4,5" />
-        </Style>
+            <Style x:Key="FilterStyle"
+                   BasedOn="{StaticResource {ComponentResourceKey TypeInTargetAssembly={x:Type filterLibrary:DataGridHeaderFilterControl},
+                                                                  ResourceId=DataGridHeaderFilterControlStyle}}"
+                   TargetType="DataGridColumnHeader">
+                <Setter Property="Padding" Value="5,4,4,5" />
+            </Style>
 
-        <MenuItem x:Key="NewTagMenuItem">
-            <MenuItem.Header>
-                <StackPanel Orientation="Horizontal">
-                    <Label Margin="0" Content="New Tag: " />
-                    <TextBox Name="NewTagTextBox"
-                             Width="100"
-                             KeyDown="NewTagTextBox_KeyDown" />
-                </StackPanel>
-            </MenuItem.Header>
-        </MenuItem>
+            <MenuItem x:Key="NewTagMenuItem">
+                <MenuItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Margin="0" Content="New Tag: " />
+                        <TextBox Name="NewTagTextBox"
+                                 Width="100"
+                                 KeyDown="NewTagTextBox_KeyDown" />
+                    </StackPanel>
+                </MenuItem.Header>
+            </MenuItem>
 
-        <MenuItem x:Key="UpdateFreqSubMenu" Header="Get New Data" />
+            <MenuItem x:Key="UpdateFreqSubMenu" Header="Get New Data" />
 
-        <MenuItem x:Key="InstrumentTagMenu"
-                  Header="Tags"
-                  SubmenuOpened="InstrumentTagMenu_OnSubmenuOpened" />
+            <MenuItem x:Key="InstrumentTagMenu"
+                      Header="Tags"
+                      SubmenuOpened="InstrumentTagMenu_OnSubmenuOpened" />
 
-        <MenuItem x:Key="InstrumentSetSessionMenu" Header="Set Session Template" />
+            <MenuItem x:Key="InstrumentSetSessionMenu" Header="Set Session Template" />
 
-        <ContextMenu x:Key="RowMenu">
-            <MenuItem Name="NewDataRequestBtn"
-                      Click="NewDataRequestBtn_OnClick"
-                      Header="Data Request..." />
-            <StaticResource ResourceKey="UpdateFreqSubMenu" />
-            <Separator />
+            <ContextMenu x:Key="RowMenu">
+                <MenuItem Name="NewDataRequestBtn"
+                          Click="NewDataRequestBtn_OnClick"
+                          Header="Data Request..." />
+                <StaticResource ResourceKey="UpdateFreqSubMenu" />
+                <Separator />
 
-            <StaticResource ResourceKey="InstrumentTagMenu" />
-            <StaticResource ResourceKey="InstrumentSetSessionMenu" />
+                <StaticResource ResourceKey="InstrumentTagMenu" />
+                <StaticResource ResourceKey="InstrumentSetSessionMenu" />
 
-            <MenuItem Name="InstrumentContextCloneBtn"
-                      Click="InstrumentContextCloneBtn_ItemClick"
-                      Header="Clone" />
-            <MenuItem Name="ImportDataBtn"
-                      Click="ImportDataBtn_ItemClick"
-                      Header="Import Data" />
-            <MenuItem Name="EditDataBtn"
-                      Click="EditDataBtn_ItemClick"
-                      Header="Edit Data" />
-            <MenuItem Name="ClearDataBtn"
-                      Click="ClearDataBtn_ItemClick"
-                      Header="Clear Data" />
-            <MenuItem Name="DeleteInstrumentBtn"
-                      Click="DeleteInstrumentBtn_ItemClick"
-                      Header="Delete" />
-        </ContextMenu>
+                <MenuItem Name="InstrumentContextCloneBtn"
+                          Click="InstrumentContextCloneBtn_ItemClick"
+                          Header="Clone" />
+                <MenuItem Name="ImportDataBtn"
+                          Click="ImportDataBtn_ItemClick"
+                          Header="Import Data" />
+                <MenuItem Name="EditDataBtn"
+                          Click="EditDataBtn_ItemClick"
+                          Header="Edit Data" />
+                <MenuItem Name="ClearDataBtn"
+                          Click="ClearDataBtn_ItemClick"
+                          Header="Clear Data" />
+                <MenuItem Name="DeleteInstrumentBtn"
+                          Click="DeleteInstrumentBtn_ItemClick"
+                          Header="Delete" />
+            </ContextMenu>
 
-        <Style x:Key="DataGridRowStyle"
-               BasedOn="{StaticResource MetroDataGridRow}"
-               TargetType="{x:Type DataGridRow}">
-            <Setter Property="ContextMenu" Value="{StaticResource RowMenu}" />
-            <EventSetter Event="MouseDoubleClick" Handler="TableView_RowDoubleClick" />
-            <Setter Property="MinHeight" Value="20" />
-            <EventSetter Event="ContextMenuOpening" Handler="ContextMenu_ContextMenuOpening" />
-        </Style>
-
-
+            <Style x:Key="DataGridRowStyle"
+                   BasedOn="{StaticResource MetroDataGridRow}"
+                   TargetType="{x:Type DataGridRow}">
+                <Setter Property="ContextMenu" Value="{StaticResource RowMenu}" />
+                <EventSetter Event="MouseDoubleClick" Handler="TableView_RowDoubleClick" />
+                <Setter Property="MinHeight" Value="20" />
+                <EventSetter Event="ContextMenuOpening" Handler="ContextMenu_ContextMenuOpening" />
+            </Style>
 
 
-        <ObjectDataProvider x:Key="InstrumentTypes"
-                            MethodName="GetValues"
-                            ObjectType="{x:Type system:Enum}">
-            <ObjectDataProvider.MethodParameters>
-                <x:Type Type="qdms:InstrumentType" />
-            </ObjectDataProvider.MethodParameters>
-        </ObjectDataProvider>
+
+
+            <ObjectDataProvider x:Key="InstrumentTypes"
+                                MethodName="GetValues"
+                                ObjectType="{x:Type system:Enum}">
+                <ObjectDataProvider.MethodParameters>
+                    <x:Type Type="qdms:InstrumentType" />
+                </ObjectDataProvider.MethodParameters>
+            </ObjectDataProvider>
+        </ResourceDictionary>
     </controls:MetroWindow.Resources>
 
 
