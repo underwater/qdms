@@ -30,13 +30,13 @@ namespace QDMSServer.ViewModels.Exchanges
         public ReactiveCommand<object> SaveCommand { get; set; }
         public ReactiveCommand<object> AddSessionCommand { get; set; }
         public ReactiveCommand<object> DeleteSessionCommand { get; set; }
-        
+
         public EditExchangeViewModel(ExchangesViewModel exchangesViewModel)
         {
             _context = new QDMSDbContext();
             TimeZones = new ReactiveList<TimeZoneInfo>(TimeZoneInfo.GetSystemTimeZones().ToList());
             ExchangesViewModel = exchangesViewModel;
-            if(ExchangesViewModel.SelectedExchange == null)
+            if (ExchangesViewModel.SelectedExchange == null)
             {
                 Title = titleForAdd;
                 Exchange = new Exchange { ID = -1 };
@@ -58,7 +58,7 @@ namespace QDMSServer.ViewModels.Exchanges
                     MessageBus.Current.SendMessage("Name already exists, please change it.");
                     return;
                 }
-                if(Title == titleForAdd)
+                if (Title == titleForAdd)
                 {
                     ExchangesViewModel.Exchanges.Add(Exchange);
                 }

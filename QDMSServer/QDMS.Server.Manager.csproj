@@ -301,6 +301,9 @@
     <Compile Include="ViewModels\Exchanges\EditExchangeViewModel.cs" />
     <Compile Include="ViewModels\Exchanges\ExchangesViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
+    <Compile Include="ViewModels\RootSymbol\EditRootSymbolsViewModel.cs" />
+    <Compile Include="ViewModels\RootSymbol\RootSymbolsViewModel.cs" />
+    <Compile Include="ViewModels\ScheduledJobsViewModel.cs" />
     <Compile Include="ViewModels\SessionTemplate\EditSessionTemplateViewModel.cs" />
     <Compile Include="ViewModels\SessionTemplate\SessionTemplatesViewModel.cs" />
     <Compile Include="Windows\AboutWindow.xaml.cs">
@@ -324,10 +327,10 @@
     <Compile Include="Windows\SessionTemplate\SessionTemplatesWindow.xaml.cs">
       <DependentUpon>SessionTemplatesWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\EditRootSymbolWindow.xaml.cs">
+    <Compile Include="Windows\RootSymbol\EditRootSymbolWindow.xaml.cs">
       <DependentUpon>EditRootSymbolWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\RootSymbolsWindow.xaml.cs">
+    <Compile Include="Windows\RootSymbol\RootSymbolsWindow.xaml.cs">
       <DependentUpon>RootSymbolsWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\HistoricalRequestWindow.xaml.cs">
@@ -410,11 +413,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Windows\EditRootSymbolWindow.xaml">
+    <Page Include="Windows\RootSymbol\EditRootSymbolWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\RootSymbolsWindow.xaml">
+    <Page Include="Windows\RootSymbol\RootSymbolsWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

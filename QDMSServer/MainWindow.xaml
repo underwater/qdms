@@ -13,8 +13,7 @@
                       BorderThickness="1"
                       Closing="DXWindow_Closing"
                       GlowBrush="{DynamicResource AccentColorBrush}"
-                      Icon="Resources\appbar.box.layered.png"
-                      Style="{DynamicResource CleanWindowStyleKey}">
+                      Icon="Resources\appbar.box.layered.png">
     <controls:MetroWindow.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
