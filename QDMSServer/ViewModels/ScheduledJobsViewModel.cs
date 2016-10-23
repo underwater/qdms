@@ -64,6 +64,7 @@ namespace QDMSServer.ViewModels
                     Jobs.Add(job);
                     _context.DataUpdateJobs.Add(job);
                     await _context.SaveChangesAsync();
+                    SelectedJob = job;
                 });
 
             ConfirmDeleteJobCommand =
@@ -76,7 +77,7 @@ namespace QDMSServer.ViewModels
                         IsBusy = false;
                     });
 
-            SaveCommand = ReactiveCommand.Create();
+            SaveCommand = ReactiveCommand.Create(this.WhenAny(x => x.SelectedJob, x => x.Value != null));
             SaveCommand.Subscribe(_ =>
             {
                 _originalJob = _context.DataUpdateJobs.Single(j => j.ID == SelectedJob.ID);

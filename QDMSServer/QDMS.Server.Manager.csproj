@@ -301,6 +301,7 @@
     <Compile Include="ViewModels\Exchanges\EditExchangeViewModel.cs" />
     <Compile Include="ViewModels\Exchanges\ExchangesViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
+    <Compile Include="ViewModels\CommandAbortException.cs" />
     <Compile Include="ViewModels\RootSymbol\EditRootSymbolsViewModel.cs" />
     <Compile Include="ViewModels\RootSymbol\RootSymbolsViewModel.cs" />
     <Compile Include="ViewModels\ScheduledJobsViewModel.cs" />

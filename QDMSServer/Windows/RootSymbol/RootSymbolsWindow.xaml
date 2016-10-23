@@ -15,17 +15,6 @@
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
-        <StackPanel Grid.Column="1" Margin="10">
-            <Button x:Name="AddBtn"
-                    Click="AddBtn_Click"
-                    Content="Add" />
-            <Button x:Name="ModifyBtn"
-                    Click="ModifyBtn_Click"
-                    Content="Modify" />
-            <Button x:Name="DeleteBtn"
-                    Click="DeleteBtn_Click"
-                    Content="Delete" />
-        </StackPanel>
 
         <DataGrid Name="SymbolsGrid"
                   Grid.Column="0"
@@ -34,7 +23,8 @@
                   VerticalAlignment="Stretch"
                   AutoGenerateColumns="False"
                   IsReadOnly="True"
-                  ItemsSource="{Binding Symbols}">
+                  ItemsSource="{Binding Symbols}"
+                  SelectedItem="{Binding SelectedSymbol}">
             <DataGrid.Columns>
                 <DataGridTextColumn Width="250"
                                     Binding="{Binding Path=Symbol}"
@@ -48,6 +38,17 @@
                 </Style>
             </DataGrid.RowStyle>
         </DataGrid>
+        <StackPanel Grid.Column="1" Margin="10">
+            <Button x:Name="AddBtn"
+                    Command="{Binding AddCommand}"
+                    Content="Add" />
+            <Button x:Name="ModifyBtn"
+                    Command="{Binding ModifyCommand}"
+                    Content="Modify" />
+            <Button x:Name="DeleteBtn"
+                    Command="{Binding DeleteCommand}"
+                    Content="Delete" />
+        </StackPanel>
 
 
     </Grid>

@@ -191,7 +191,8 @@
                               ColumnHeaderStyle="{StaticResource FilterStyle}"
                               IsReadOnly="True"
                               ItemsSource="{Binding Instruments}"
-                              RowStyle="{StaticResource DataGridRowStyle}">
+                              RowStyle="{StaticResource DataGridRowStyle}"
+                              SelectedItem="{Binding SelectedInstrument}">
 
 
                         <DataGrid.Columns>

@@ -28,6 +28,8 @@ using Quartz.Impl;
 using Quartz.Impl.Matchers;
 using QDMSServer.DataSources;
 using QDMS.Server.DataSources;
+using QDMSServer.ViewModels;
+using Splat;
 
 namespace QDMSServer
 {
@@ -50,7 +52,7 @@ namespace QDMSServer
 
         public ObservableCollection<Instrument> Instruments { get; set; }
 
-        public ObservableCollection<LogEventInfo> LogMessages { get; set; }
+        public MainViewModel ViewModel { get; set; }
 
         public MainWindow()
         {
@@ -66,7 +68,8 @@ namespace QDMSServer
             DBUtils.SetConnectionString();
 
             InitializeComponent();
-            DataContext = this;
+            ViewModel = Locator.Current.GetService<MainViewModel>();
+            DataContext = ViewModel;
 
             //load datagrid layout
             string layoutFile = AppDomain.CurrentDomain.BaseDirectory + "GridLayout.xml";
@@ -81,7 +84,6 @@ namespace QDMSServer
                 }
             }
 
-            LogMessages = new ObservableCollection<LogEventInfo>();
 
             //target is where the log managers send their logs, here we grab the memory target which has a Subject to observe
             var target = LogManager.Configuration.AllTargets.Single(x => x.Name == "myTarget") as MemoryTarget;
@@ -91,7 +93,7 @@ namespace QDMSServer
             //we subscribe to the messages and send them all to the LogMessages collection
             if (target != null)
             {
-                target.Messages.Subscribe(msg => 
+                target.Messages.Subscribe(msg =>
                 {
                     //LogMessages.Add(msg);
                 });
@@ -137,13 +139,7 @@ namespace QDMSServer
 
             Instruments = new ObservableCollection<Instrument>();
 
-            var mgr = new InstrumentManager();
-            var instrumentList = mgr.FindInstruments(entityContext);
 
-            foreach (Instrument i in instrumentList)
-            {
-                Instruments.Add(i);
-            }
 
             //create brokers
             var cfRealtimeBroker = new ContinuousFuturesBroker(new QDMSClient.QDMSClient(
@@ -181,7 +177,7 @@ namespace QDMSServer
 
             //create the various servers
             _realTimeServer = new RealTimeDataServer(Properties.Settings.Default.rtDBPubPort, Properties.Settings.Default.rtDBReqPort, RealTimeBroker);
-            _instrumentsServer = new InstrumentsServer(Properties.Settings.Default.instrumentServerPort, mgr);
+            _instrumentsServer = new InstrumentsServer(Properties.Settings.Default.instrumentServerPort, new InstrumentManager());
             _historicalDataServer = new HistoricalDataServer(Properties.Settings.Default.hDBPort, HistoricalBroker);
 
             //and start them
@@ -420,7 +416,7 @@ namespace QDMSServer
             {
                 foreach (Instrument i in window.ViewModel.AddedInstruments)
                 {
-                    Instruments.Add(i);
+                    ViewModel.Instruments.Add(i);
                 }
                 window.Close();
             }
@@ -430,51 +426,25 @@ namespace QDMSServer
         private void AddInstrumentQuandlBtn_OnClick(object sender, RoutedEventArgs e)
         {
             var window = new AddInstrumentQuandlWindow();
-
-            //if (window.AddedInstruments != null)
-            //{
-            //    foreach (Instrument i in window.AddedInstruments)
-            //    {
-            //        Instruments.Add(i);
-            //    }
-            //    window.Close();
-            //}
         }
 
         //show the FRED add instrument window
         private void AddInstrumentFredBtn_OnClick(object sender, RoutedEventArgs e)
         {
-            using (var context = new QDMSDbContext())
-            {
-                var window = new AddInstrumentFredWindow().ShowDialog();
-
-                //if (window.AddedInstruments != null)
-                //{
-                //    foreach (Instrument i in window.AddedInstruments)
-                //    {
-                //        Instruments.Add(i);
-                //    }
-                //    window.Close();
-                //}
-            }
+            var window = new AddInstrumentFredWindow().ShowDialog();
         }
 
         //show a window to modify the selected instrument
         private void TableView_RowDoubleClick(object sender, MouseButtonEventArgs mouseButtonEventArgs)
         {
-            var inst = (Instrument)InstrumentsGrid.SelectedItem;
-            var window = new AddInstrumentManuallyWindow(inst, false);
+            var window = new AddInstrumentManuallyWindow(false);
             window.ShowDialog();
-
-            CollectionViewSource.GetDefaultView(InstrumentsGrid.ItemsSource).Refresh();
-
-            window.Close();
         }
 
         //show the window to add a new custom futures contract
         private void BtnAddCustomFutures_ItemClick(object sender, RoutedEventArgs routedEventArgs)
         {
-            var window = new AddInstrumentManuallyWindow(addingContFut: true);
+            var window = new AddInstrumentManuallyWindow(false, addingContFut: true);
             window.ShowDialog();
             if (window.InstrumentAdded)
             {
@@ -485,26 +455,15 @@ namespace QDMSServer
 
         private void AddInstrumentManuallyBtn_ItemClick(object sender, RoutedEventArgs routedEventArgs)
         {
-            var window = new AddInstrumentManuallyWindow();
+            var window = new AddInstrumentManuallyWindow(true);
             window.ShowDialog();
-            if (window.InstrumentAdded)
-            {
-                Instruments.Add(window.Instrument);
-            }
-            window.Close();
         }
 
         //clone an instrument
         private void InstrumentContextCloneBtn_ItemClick(object sender, RoutedEventArgs routedEventArgs)
         {
-            var inst = (Instrument)InstrumentsGrid.SelectedItem;
-            var window = new AddInstrumentManuallyWindow(inst);
+            var window = new AddInstrumentManuallyWindow(false);
             window.ShowDialog();
-            if (window.InstrumentAdded)
-            {
-                Instruments.Add(window.Instrument);
-            }
-            window.Close();
         }
 
         //delete one or more instruments

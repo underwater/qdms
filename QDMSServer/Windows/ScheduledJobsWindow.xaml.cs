@@ -46,10 +46,8 @@ namespace QDMSServer
             {
                 MessageBox.Show(x);
             });
-            DataContext = ViewModel;          
+            DataContext = ViewModel;         
 
-        }
-
-        
+        }        
     }
 }

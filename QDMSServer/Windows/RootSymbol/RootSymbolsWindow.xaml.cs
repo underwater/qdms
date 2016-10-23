@@ -4,6 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
@@ -12,6 +13,7 @@ using System.Windows.Input;
 using EntityData;
 using MahApps.Metro.Controls;
 using QDMS;
+using QDMSServer.ViewModels.RootSymbol;
 
 namespace QDMSServer
 {
@@ -20,82 +22,41 @@ namespace QDMSServer
     /// </summary>
     public partial class RootSymbolsWindow : MetroWindow
     {
+        public RootSymbolsViewModel ViewModel { get; set; }
+
         public ObservableCollection<UnderlyingSymbol> Symbols { get; set; }
 
         public RootSymbolsWindow()
         {
             InitializeComponent();
-            DataContext = this;
-
-            Symbols = new ObservableCollection<UnderlyingSymbol>();
-
-            using (var context = new QDMSDbContext())
+            ViewModel = new RootSymbolsViewModel();
+            DataContext = ViewModel;
+            ViewModel.AddCommand.Subscribe(_ =>
             {
-                var templates = context.UnderlyingSymbols.OrderBy(x => x.Symbol);
-                foreach (UnderlyingSymbol s in templates)
-                {
-                    Symbols.Add(s);
-                }
-            }
-        }
+                var window = new EditRootSymbolWindow(ViewModel);
+                window.ShowDialog();
+            });
 
-        private void AddBtn_Click(object sender, RoutedEventArgs e)
-        {
-            var window = new EditRootSymbolWindow(null);
-            window.ShowDialog();
-
-            if (window.SymbolAdded)
+            ViewModel.ModifyCommand.Subscribe(_ =>
             {
-                using (var entityContext = new QDMSDbContext())
-                {
-                    Symbols.Add(entityContext.UnderlyingSymbols.First(x => x.Symbol == window.TheSymbol.Symbol));
-                }
-            }
-        }
+                var window = new EditRootSymbolWindow(ViewModel, true);
+                window.ShowDialog();
+            });
 
-        private void ModifyBtn_Click(object sender, RoutedEventArgs e)
-        {
-            if (SymbolsGrid.SelectedItems.Count == 0) return;
-
-            var window = new EditSessionTemplateWindow();
-            window.ShowDialog();
-            CollectionViewSource.GetDefaultView(SymbolsGrid.ItemsSource).Refresh();
-        }
-
-        private void DeleteBtn_Click(object sender, RoutedEventArgs e)
-        {
-            var selectedSymbol = (UnderlyingSymbol)SymbolsGrid.SelectedItem;
-            if (selectedSymbol == null) return;
-
-            using (var context = new QDMSDbContext())
+            ViewModel.DeleteCommand.Subscribe(_ =>
             {
-                var instrumentCount = context.Instruments.Count(x => x.SessionTemplateID == selectedSymbol.ID && x.SessionsSource == SessionsSource.Template);
-                if (instrumentCount > 0)
-                {
-                    MessageBox.Show(string.Format("Can't delete this template it has {0} instruments assigned to it.", instrumentCount));
-                    return;
-                }
-            }
-
-            var result = MessageBox.Show(string.Format("Are you sure you want to delete {0}?", selectedSymbol.Symbol), "Delete", MessageBoxButton.YesNo);
-            if (result == MessageBoxResult.No) return;
-
-            using (var entityContext = new QDMSDbContext())
-            {
-                entityContext.UnderlyingSymbols.Attach(selectedSymbol);
-                entityContext.UnderlyingSymbols.Remove(selectedSymbol);
-                entityContext.SaveChanges();
-            }
-
-            Symbols.Remove(selectedSymbol);
-            CollectionViewSource.GetDefaultView(SymbolsGrid.ItemsSource).Refresh();
+                var result = MessageBox.Show(string.Format("Are you sure you want to delete {0}?", ViewModel.SelectedSymbol.Symbol), "Delete", MessageBoxButton.YesNo);
+                if (result == MessageBoxResult.Yes)
+                    ViewModel.ConfirmDeleteCommand.Execute(null);
+            });
+                        
         }
 
         private void TableView_RowDoubleClick(object sender, MouseButtonEventArgs mouseButtonEventArgs)
         {
-            var window = new EditRootSymbolWindow((UnderlyingSymbol)SymbolsGrid.SelectedItem);
-            window.ShowDialog();
-            CollectionViewSource.GetDefaultView(SymbolsGrid.ItemsSource).Refresh();
+            //var window = new EditRootSymbolWindow((UnderlyingSymbol)SymbolsGrid.SelectedItem);
+            //window.ShowDialog();
+            //CollectionViewSource.GetDefaultView(SymbolsGrid.ItemsSource).Refresh();
         }
     }
 }

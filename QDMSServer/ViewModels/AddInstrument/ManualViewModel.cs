@@ -2,6 +2,7 @@
 using QDMS;
 using QDMSServer.Helpers;
 using ReactiveUI;
+using Splat;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -56,7 +57,6 @@ namespace QDMSServer.ViewModels
             set { this.RaiseAndSetIfChanged(ref _selectedSession, value); }
         }
 
-
         public ObservableCollection<Datasource> Datasources { get; set; }
 
         public ObservableCollection<UnderlyingSymbol> UnderlyingSymbols { get; set; }
@@ -70,9 +70,7 @@ namespace QDMSServer.ViewModels
         public ReactiveCommand<object> AddSessionCommand { get; set; }
 
         public ReactiveCommand<object> DeleteSessionCommand { get; set; }
-
-        public bool InstrumentAdded { get; private set; }
-
+        
         private string _errorMessage;
         public string ErrorMessage
         {
@@ -82,6 +80,7 @@ namespace QDMSServer.ViewModels
 
         public ManualViewModel(bool isEditMode = true, bool clone = false, bool addingContFut = false)
         {
+            MainViewModel = Locator.Current.GetService<MainViewModel>();
             _context = new QDMSDbContext();
             IsEditMode = isEditMode;
 
@@ -96,8 +95,6 @@ namespace QDMSServer.ViewModels
                 Instrument = MainViewModel?.SelectedInstrument;
                 if (Instrument != null)
                 {
-                    _context.Instruments.Attach(Instrument);
-                    _context.Entry(Instrument).Reload();
                     if (Instrument.Exchange != null)
                         _context.Entry(Instrument.Exchange).Reload();
 
@@ -346,8 +343,7 @@ namespace QDMSServer.ViewModels
                 Instrument.ContinuousFuture.InstrumentID = Instrument.ID.Value;
                 _context.SaveChanges();
             }
-
-            InstrumentAdded = true;
+            MainViewModel.Instruments.Add(Instrument);
             CloseCommand.Execute(null);
         }
 

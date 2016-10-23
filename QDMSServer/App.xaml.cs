@@ -26,8 +26,9 @@ namespace QDMSServer
     {
         public AppBootstrapper()
         {
-            Locator.CurrentMutable.Register(() => new FredViewModel(), typeof(FredViewModel));
-            Locator.CurrentMutable.Register(() => new QuandlViewModel(), typeof(QuandlViewModel));
+            Locator.CurrentMutable.RegisterConstant(new MainViewModel(), typeof(MainViewModel));
+            Locator.CurrentMutable.RegisterConstant(new FredViewModel(), typeof(FredViewModel));
+            Locator.CurrentMutable.RegisterConstant(new QuandlViewModel(), typeof(QuandlViewModel));
         }
     }
 }

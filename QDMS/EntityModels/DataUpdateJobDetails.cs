@@ -40,53 +40,74 @@ namespace QDMS
 
         private string _name;
 
+        private bool _useTag;
         /// <summary>
         /// If true, all instruments with the given tag are matched. If false, a specific instrument is matched.
         /// </summary>
-        public bool UseTag { get; set; }
+        public bool UseTag
+        {
+            get { return _useTag; }
+            set { _useTag = value; OnPropertyChanged(); }
+        }
 
         /// <summary>
         /// If UseTag = false, this instrument's data gets updated.
         /// </summary>
         public int? InstrumentID { get; set; }
 
+        private Instrument _instrument;
         /// <summary>
         /// Instrument.
         /// </summary>
-        public virtual Instrument Instrument { get; set; }
+        public virtual Instrument Instrument
+        {
+            get { return _instrument; }
+            set { _instrument = value; OnPropertyChanged(); }
+        }
 
         /// <summary>
         /// If UseTag = true, instruments having this tag are updated.
         /// </summary>
         public int? TagID { get; set; }
 
+        private Tag _tag;
         /// <summary>
         /// Tag.
         /// </summary>
-        public virtual Tag Tag { get; set; }
+        public virtual Tag Tag { get { return _tag; } set { _tag = value; OnPropertyChanged(); } }
 
+        private bool _weekDaysOnly;
         /// <summary>
         /// If true, updates will only happen monday through friday.
         /// </summary>
-        public bool WeekDaysOnly { get; set; }
+        public bool WeekDaysOnly { get { return _weekDaysOnly; } set { _weekDaysOnly = value; OnPropertyChanged(); } }
 
+        private TimeSpan _time;
         /// <summary>
         /// The time when the job runs.
         /// </summary>
-        public TimeSpan Time { get; set; }
+        public TimeSpan Time
+        {
+            get { return _time; }
+            set
+            {
+                _time = value;
+                OnPropertyChanged();
+            }
+        }
 
+        private BarSize _frequence;
         /// <summary>
         /// The data frequency to be updated.
         /// </summary>
-        public BarSize Frequency { get; set; }
+        public BarSize Frequency { get { return _frequence; } set { _frequence = value; OnPropertyChanged(); } }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
         [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
-            PropertyChangedEventHandler handler = PropertyChanged;
-            if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using EntityData;
 using ReactiveUI;
+using Splat;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -17,6 +18,7 @@ namespace QDMSServer.ViewModels
 
         public FredViewModel() : base()
         {
+            MainViewModel = Locator.Current.GetService<MainViewModel>();
             var canSearch = this.WhenAny(x => x.SearchText, x => !string.IsNullOrEmpty(x.Value));
             SearchCommand = ReactiveCommand.CreateAsyncTask(canSearch, async _ =>
             {

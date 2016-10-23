@@ -12,21 +12,27 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.IO;
 using ProtoBuf;
 using QLNet;
+using System.ComponentModel;
 
 namespace QDMS
 {
     [ProtoContract]
     [Serializable]
-    public class UnderlyingSymbol : ICloneable
+    public class UnderlyingSymbol : ICloneable, INotifyPropertyChanged
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [ProtoMember(1)]
         public int ID { get; set; }
 
+        private string _symbol;
         [ProtoMember(2)]
         [MaxLength(255)]
-        public string Symbol { get; set; }
+        public string Symbol
+        {
+            get { return _symbol; }
+            set { _symbol = value; OnNotifyPropertyChanged(nameof(Symbol)); }
+        }
 
         //The byte is what we save to the database, the ExpirationRule is what we use in our applications
         public byte[] ExpirationRule
@@ -146,6 +152,13 @@ namespace QDMS
         public override string ToString()
         {
             return Symbol;
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public virtual void OnNotifyPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

@@ -4,11 +4,14 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using System;
 using System.Linq;
 using System.Windows;
 using EntityData;
 using MahApps.Metro.Controls;
 using QDMS;
+using QDMSServer.ViewModels.RootSymbol;
+using ReactiveUI;
 
 namespace QDMSServer
 {
@@ -17,106 +20,29 @@ namespace QDMSServer
     /// </summary>
     public partial class EditRootSymbolWindow : MetroWindow
     {
-        public UnderlyingSymbol TheSymbol { get; set; }
-        public bool SymbolAdded;
-
-        private UnderlyingSymbol _originalSymbol;
-
-        public EditRootSymbolWindow(UnderlyingSymbol symbol)
+        public EditRootSymbolsViewModel ViewModel { get; set; }
+        
+        public EditRootSymbolWindow(RootSymbolsViewModel viewModel, bool isEdit = false)
         {
             InitializeComponent();
-            DataContext = this;
-
-            if (symbol == null)
+            if (!isEdit)
             {
-                TheSymbol = new UnderlyingSymbol 
+                viewModel.SelectedSymbol = null;
+            }
+            ViewModel = new EditRootSymbolsViewModel(viewModel);
+            DataContext = ViewModel;
+            this.WhenAnyObservable(x => x.ViewModel.CloseCommand)
+                .Subscribe(_ =>
                 {
-                    Rule = new ExpirationRule(), 
-                    ID = -1
-                };
-                ModifyBtn.Content = "Add";
-            }
-            else
-            {
-                _originalSymbol = symbol;
-                TheSymbol = (UnderlyingSymbol)symbol.Clone();
-                ModifyBtn.Content = "Modify";
-            }
-
-            //set the corrent radio box check
-            if (TheSymbol.Rule.ReferenceDayIsLastBusinessDayOfMonth)
-            {
-                LastBusinessDayRadioBtn.IsChecked = true;
-            }
-            else if (TheSymbol.Rule.ReferenceUsesDays)
-            {
-                DaysBasedRefCheckBox.IsChecked = true;
-            }
-            else
-            {
-                WeeksBasedRefCheckBox.IsChecked = true;
-            }
-        }
-
-        private void CancelBtn_Click(object sender, RoutedEventArgs e)
-        {
-            SymbolAdded = false;
-            Hide();
-        }
-
-        private void ModifyBtn_Click(object sender, RoutedEventArgs e)
-        {
-            if (string.IsNullOrEmpty(TheSymbol.Symbol))
-            {
-                MessageBox.Show("Must have a symbol.");
-                return;
-            }
-
-            
-            using (var entityContext = new QDMSDbContext())
-            {
-                //check that the symbol doesn't already exist
-                bool symbolExists = entityContext.UnderlyingSymbols.Count(x => x.Symbol == TheSymbol.Symbol) > 0;
-                bool addingNew = TheSymbol.ID == -1;
-
-                if (symbolExists && addingNew)
+                    Hide();
+                    ViewModel.Dispose();
+                });
+            this.WhenAnyObservable(x => x.ViewModel.SaveCommand.ThrownExceptions)
+                .Subscribe(ex =>
                 {
-                    MessageBox.Show("Must have a symbol.");
-                    return;
-                }
+                    MessageBox.Show(ex.Message);
+                });
 
-                if (addingNew)
-                {
-                    entityContext.UnderlyingSymbols.Add(TheSymbol);
-                }
-                else
-                {
-                    entityContext.UnderlyingSymbols.Attach(_originalSymbol);
-                    entityContext.Entry(_originalSymbol).CurrentValues.SetValues(TheSymbol);
-                }
-
-                entityContext.SaveChanges();
-            }
-
-            SymbolAdded = true;
-            Hide();
-        }
-
-        private void DaysBasedRefCheckBox_Checked(object sender, RoutedEventArgs e)
-        {
-            TheSymbol.Rule.ReferenceUsesDays = true;
-            TheSymbol.Rule.ReferenceDayIsLastBusinessDayOfMonth = false;
-        }
-
-        private void WeeksBasedRefCheckBox_Checked(object sender, RoutedEventArgs e)
-        {
-            TheSymbol.Rule.ReferenceUsesDays = false;
-            TheSymbol.Rule.ReferenceDayIsLastBusinessDayOfMonth = false;
-        }
-
-        private void LastBusinessDayRadioBtn_Checked(object sender, RoutedEventArgs e)
-        {
-            TheSymbol.Rule.ReferenceDayIsLastBusinessDayOfMonth = true;
         }
     }
 }

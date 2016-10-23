@@ -1,4 +1,6 @@
-﻿using QDMS;
+﻿using EntityData;
+using QDMS;
+using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -16,7 +18,16 @@ namespace QDMSServer.ViewModels
         public Instrument SelectedInstrument
         {
             get { return _selectedInstrument; }
-            set { _selectedInstrument = value; }
+            set { this.RaiseAndSetIfChanged(ref _selectedInstrument, value); }
+        }
+
+        public MainViewModel()
+        {
+            using (var context = new QDMSDbContext())
+            {
+                var instruments = new InstrumentManager().FindInstruments(context);
+                Instruments = new ObservableCollection<Instrument>(instruments);
+            }
         }
     }
 }
