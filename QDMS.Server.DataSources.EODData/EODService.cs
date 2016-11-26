@@ -35,7 +35,7 @@ namespace QDMS.Server.DataSources
 
         private void Login()
         {
-            var response = _eodClient.Login("advisor", "advisor");
+            var response = _eodClient.Login("", "");
             if (!string.IsNullOrEmpty(response.Message) && string.IsNullOrEmpty(response.Token))
             {
                 var message = string.Format("EOD service error: {0}", response.Message);
